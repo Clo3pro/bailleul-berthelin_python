@@ -1,0 +1,34 @@
+{
+  "nhits": 9336,
+  "parameters": {
+    "dataset": "liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017",
+    "refine": {
+      "zone_defavorisee_simple_fr": "ZDS"
+    },
+    "timezone": "UTC",
+    "rows": 9336,
+    "start": 0,
+    "format": "json"
+  },
+  "records": [
+    {
+      "datasetid": "liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017",
+      "recordid": "15ed89994aef5c76dd68d3f0f632f73247240761",
+      "fields": {
+        "nom_petite_region_agricole": "Bocage Bourbonnais",
+        "zone_defavorisee_simple_fr": "ZDS",
+        "fichier_ign_code_2": 2.0,
+        "code_pra": 178.0,
+        "fichier_france_code_1": 1.0,
+        "code_commune": "03053",
+        "date_de_decision_france_1": "1977-04-28",
+        "classement_par_article": "Art 19",
+        "code_2019": "03053",
+        "intra_ou_inter_dept": "intra",
+        "current_code": "03053",
+        "nom_commune": "CHANTELLE"
+      },
+      "record_timestamp": "2020-07-07T16:04:18.589000+00:00"
+    }
+  ]
+}

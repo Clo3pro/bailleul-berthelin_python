@@ -1,0 +1,35 @@
+
+Pour récupérer le Git :
+    cd adresse_du_clonage
+    git clone https://git.esiee.fr/bailleuv/bailleul-berthelin-python-project.git
+
+
+Pour déposer le Git :
+    cd bailleul-berthelin-python-project
+    git add .
+    git commit -m "message informatif des changements effectués"
+    git push
+
+
+Rendu du projet de Python : 2 janvier 2022
+
+
+https://public.opendatasoft.com/explore/dataset/liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017/table/?rows=9336&refine.zone_defavorisee_simple_fr=ZDS
+    (9336 données)
+    http://jsonviewer.stack.hu/
+    https://api.gouv.fr/documentation/api-geo
+
+
+
+INSTALLATION
+
+
+installer conda
+-> conda install -c anaconda requests
+ouvrir Anaconda Navigator via windows
+powershell prompt
+-> python -m pip install requests
+dans VS Code
+ctrl shift p
+Python : select interpreter
+'base':conda
