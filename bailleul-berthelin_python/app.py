@@ -5,7 +5,7 @@ import plotly.express as px
 import pandas as pd
 
 app = dash.Dash(__name__)
-#command to launch: cloeberthelin$ /usr/local/bin/python3 /Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/app.py
+# command to launch: cloeberthelin$ /usr/local/bin/python3 /Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/app.py
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
 colors = {
@@ -15,13 +15,26 @@ colors = {
 
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
+"""
 df = pd.DataFrame({
     "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
     "Amount": [4, 1, 2, 2, 4, 5],
     "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
 })
-
 fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
+"""
+
+with open("pourcent_defavorise.csv", mode='r', encoding='utf8') as f:
+    dep_list = []
+    pourcentage_list = []
+    for elem in f:
+        dep_list.append([elem.split(',')[0]])
+        pourcentage_list.append([elem.split(",")[1].split('\n')[0]])
+
+data = {'Dep': dep_list, 'Pourcent': pourcentage_list}
+df = pd.DataFrame(data=data)
+fig = px.bar(df, barmode="group")
+
 
 fig.update_layout(
     plot_bgcolor=colors['background'],
@@ -31,14 +44,14 @@ fig.update_layout(
 
 app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
     html.H1(
-        children='Hello Dash',
+        children='Titre principal',
         style={
             'textAlign': 'center',
             'color': colors['text']
         }
     ),
 
-    html.Div(children='Dash: A web application framework for your data.', style={
+    html.Div(children='Présentation du projet.', style={
         'textAlign': 'center',
         'color': colors['text']
     }),
