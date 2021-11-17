@@ -40,6 +40,12 @@ def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
             print("\n\n\nBug ici\n\n\n")
             breakpoint()
 
+    """# tests pour dep sans ville:
+    for dep in list(dep_dict):
+        if len(dep_dict[dep]) == 0:
+            dep_dict.pop(dep)
+            #breakpoint()"""
+
     return dep_dict
 
 

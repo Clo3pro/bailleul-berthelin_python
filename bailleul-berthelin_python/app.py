@@ -1,32 +1,37 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 import plotly.express as px
 import pandas as pd
 
 app = dash.Dash(__name__)
-
+#command to launch: cloeberthelin$ /usr/local/bin/python3 /Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/app.py
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
-df = pd.DataFrame({
-    "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-    "Amount": [4, 1, 2, 2, 4, 5],
-    "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
-})
+colors = {
+    'background': '#111111',
+    'text': '#7FDBFF'
+}
+df = pd.read_csv('/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/projet-excel-2020/synop.2015110112.csv')
 
-fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
+def generate_table(dataframe, max_rows=100):
+    return html.Table([
+        html.Thead(
+            html.Tr([html.Th(col) for col in dataframe.columns])
+        ),
+        html.Tbody([
+            html.Tr([
+                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+            ]) for i in range(min(len(dataframe), max_rows))
+        ])
+    ])
 
-app.layout = html.Div(children=[
-    html.H1(children='Hello Dash'),
 
-    html.Div(children='''
-        Dash: A web application framework for your data.
-    '''),
+app = dash.Dash(__name__)
 
-    dcc.Graph(
-        id='example-graph',
-        figure=fig
-    )
+app.layout = html.Div([
+    html.H4(children='US Agriculture Exports (2011)'),
+    generate_table(df)
 ])
 
 if __name__ == '__main__':
