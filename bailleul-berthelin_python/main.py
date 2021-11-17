@@ -6,6 +6,7 @@ from DICT_DEP import departement_dict
 from NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
 #import urllib.request
 
+import csv
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
     """
@@ -90,9 +91,15 @@ def main():
       #      print(i)
 
     pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
-    for le_dep in pourcent_defavorise:
-        print(le_dep + " : " + str(pourcent_defavorise.get(le_dep,"not exist, too bad jajaja")))
-    #print(pourcent_defavorise)
+    """for le_dep in pourcent_defavorise:
+        print(le_dep + " : " + str(pourcent_defavorise.get(le_dep,"not exist, too bad jajaja")))"""
+    with open('/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv', 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(["Département", "Pourcentage communes défavorisées"])
+        for k, v in pourcent_defavorise.items():
+            print(f"Ecriture de {k}")
+            writer.writerow([k, v])
+
 # end main
 
 
