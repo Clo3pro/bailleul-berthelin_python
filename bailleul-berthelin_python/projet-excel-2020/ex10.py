@@ -1,5 +1,7 @@
 from collections import namedtuple
-import csv, json
+import csv
+import json
+
 
 def build_stations_dict(filename):
     with open('C:/Users/valen/Desktop/E2/Python/Python/data/' + filename, 'r') as csvfile:

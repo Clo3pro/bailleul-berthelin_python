@@ -5,20 +5,31 @@ from requests.models import RequestEncodingMixin
 
 from DICT_DEP import departement_dict
 from NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
-#import urllib.request
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
+
+
+def getcheminrelatif():
+    try:
+        with open('/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv', 'w'):
+            cheminrelatif = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python"
+    except:
+        cheminrelatif = "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python"
+    return cheminrelatif
+
+
+CHEMIN_RELATIF = getcheminrelatif()
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
     """
-            Exemple :
-            dd == {'1' : ['ville1', 'ville2']}
-            dd['1']
-            Renvoie ['ville1', 'ville2']
+        Exemple :
+        dd == {'1' : ['ville1', 'ville2']}
+        dd['1']
+        Renvoie ['ville1', 'ville2']
 
-            dd['1'].append("ville3")
-            dd['1']
-            Renvoie ['ville1', 'ville2', 'ville3']
+        dd['1'].append("ville3")
+        dd['1']
+        Renvoie ['ville1', 'ville2', 'ville3']
     """
     # de 0 à n-1  # Remplacer par nb_villes si différent de nb_villes
     for i in range(nb_villes):
@@ -46,7 +57,7 @@ def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
 	for dep in list(dep_dict):
 		if len(dep_dict[dep]) == 0:
 			dep_dict.pop(dep)
-			#breakpoint()"""
+			# breakpoint()"""
 
     return dep_dict
 
@@ -62,31 +73,22 @@ def pourcent_ville_defavorisee_par_dep(dep_dict):
         nb_comm = nbCparD[numero_dep]
         pourcent_dict[numero_dep] = round(
             float(nb_defa)*100 / float(nb_comm), 2)
-    # itère sur tous les départements
-    # for i in dep_dict:
-    #	 numero_dep = str(i).zfill(2)
-    #	 nb_defa = len(dep_dict[numero_dep])
-    #	 nb_comm = nbCparD[numero_dep]
-    #	 pourcent = round(float(nb_defa*100 / float(nb_comm)), 2)
-    #	 pourcent_dict[numero_dep] = pourcent
 
     return pourcent_dict
 
 
 def create_csv_file(pourcent_defavorise):
-    try:
-        with open('/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv', 'w'):
-            cheminrelatif = '/Users/cloeberthelin/labo_school/bailleul-berthelin_python'
-    except:
-        cheminrelatif = 'C:\\Users\\VALENTIN\\Desktop\\E3\\python\\bailleul-berthelin_python'
-
-    with open(cheminrelatif+'/bailleul-berthelin_python/pourcent_defavorise.csv', 'w', newline='') as csv_file:
+    with open(CHEMIN_RELATIF+'/bailleul-berthelin_python/pourcent_defavorise.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(
             ['Departement', 'Pourcentage communes defavorisees'])
         for k, v in pourcent_defavorise.items():
             writer.writerow([k, v])
     print(f'Ecriture terminée')
+
+
+def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
+    """y= pourcentage de communes défa par dép en fct de x = range 0/25/50/75/100"""
 
 
 def main():
@@ -111,8 +113,8 @@ def main():
 	# Récupérer les données géographiques des communes via code insee
 	for codeinsee in communes_dict.items():
 		print(codeinsee[0])
-		#url_json_dep = "https://geo.api.gouv.fr/communes?code={codeinsee[0]}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
-		#url_json_dep_truc = json.loads(requests.get(url_json_dep).text)
+		# url_json_dep = "https://geo.api.gouv.fr/communes?code={codeinsee[0]}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
+		# url_json_dep_truc = json.loads(requests.get(url_json_dep).text)
 """
 
 # Run

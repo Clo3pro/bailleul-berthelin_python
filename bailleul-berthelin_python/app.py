@@ -4,6 +4,8 @@ from dash import html
 import plotly.express as px
 import pandas as pd
 
+from main import CHEMIN_RELATIF
+
 app = dash.Dash(__name__)
 # command to launch: cloeberthelin$ /usr/local/bin/python3 /Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/app.py
 # assume you have a "long-form" data frame
@@ -17,14 +19,15 @@ colors = {
 # see https://plotly.com/python/px-arguments/ for more options
 """
 df = pd.DataFrame({
-    "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-    "Amount": [4, 1, 2, 2, 4, 5],
-    "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
+	"Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
+	"Amount": [4, 1, 2, 2, 4, 5],
+	"City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
 })
 fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
 """
 
-with open("pourcent_defavorise.csv", mode='r', encoding='utf8') as f:
+
+with open(CHEMIN_RELATIF + "/pourcent_defavorise.csv", mode='r', encoding='utf8') as f:
     dep_list = []
     pourcentage_list = []
     for elem in f:
@@ -65,23 +68,23 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 df = pd.read_csv('/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv')
 
 def generate_table(dataframe, max_rows=100):
-    return html.Table([
-        html.Thead(
-            html.Tr([html.Th(col) for col in dataframe.columns])
-        ),
-        html.Tbody([
-            html.Tr([
-                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-            ]) for i in range(min(len(dataframe), max_rows))
-        ])
-    ])
+	return html.Table([
+		html.Thead(
+			html.Tr([html.Th(col) for col in dataframe.columns])
+		),
+		html.Tbody([
+			html.Tr([
+				html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+			]) for i in range(min(len(dataframe), max_rows))
+		])
+	])
 
 
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
-    html.H4(children='Pourcentage zones agricoles défavorisées par département en France (2017)'),
-    generate_table(df)
+	html.H4(children='Pourcentage zones agricoles défavorisées par département en France (2017)'),
+	generate_table(df)
 ])"""
 
 if __name__ == '__main__':
