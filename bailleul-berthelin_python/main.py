@@ -91,8 +91,18 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
     """
     y= pourcentage de communes défa par dép en fct de x= range 0/25/50/75/100
     """
-    with open(CHEMIN_RELATIF+'/bailleul-berthelin_python/pourcent_defavorise.csv', 'w') as csv_file:
-        breakpoint()
+    myRangeDict = {
+        '0': '0',
+        '0-25': '0',
+        '25-50': '0',
+        '50-75': '0',
+        '75-100': '0'
+    }
+    with open(CHEMIN_RELATIF+'/bailleul-berthelin_python/pourcent_defavorise.csv', newline='') as csv_file:
+
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            print(row)
 
 
 def main():
