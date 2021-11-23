@@ -22,14 +22,14 @@ CHEMIN_RELATIF = getcheminrelatif()
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
     """
-        Exemple :
-        dd == {'1' : ['ville1', 'ville2']}
-        dd['1']
-        Renvoie ['ville1', 'ville2']
+                                    Exemple :
+                                    dd == {'1' : ['ville1', 'ville2']}
+                                    dd['1']
+                                    Renvoie ['ville1', 'ville2']
 
-        dd['1'].append("ville3")
-        dd['1']
-        Renvoie ['ville1', 'ville2', 'ville3']
+                                    dd['1'].append("ville3")
+                                    dd['1']
+                                    Renvoie ['ville1', 'ville2', 'ville3']
     """
     # de 0 à n-1  # Remplacer par nb_villes si différent de nb_villes
     for i in range(nb_villes):
@@ -91,6 +91,8 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
     """
     y= pourcentage de communes défa par dép en fct de x= range 0/25/50/75/100
     """
+    with open(CHEMIN_RELATIF+'/bailleul-berthelin_python/pourcent_defavorise.csv', 'w') as csv_file:
+        breakpoint()
 
 
 def main():
@@ -106,6 +108,8 @@ def main():
     pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
 
     create_csv_file(pourcent_defavorise)
+
+    pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100()
 
 # end main
 
