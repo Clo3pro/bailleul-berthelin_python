@@ -89,7 +89,7 @@ def create_csv_file(pourcent_defavorise):
 
 def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
     """
-    y= pourcentage de communes défa par dép en fct de x = range 0/25/50/75/100
+    y= pourcentage de communes défa par dép en fct de x= range 0/25/50/75/100
     """
 
 
