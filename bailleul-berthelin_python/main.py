@@ -10,7 +10,7 @@ LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-de
 
 
 CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
-CHEMIN_ABSOLU = "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+#CHEMIN_ABSOLU = "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
     """
