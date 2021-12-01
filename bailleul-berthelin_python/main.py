@@ -1,3 +1,4 @@
+from abc import _FuncT
 import csv
 import requests
 import json
@@ -8,26 +9,22 @@ from NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
 
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
-
-def getcheminrelatif():
-    return '/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv'
-    # return "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
-
-
-CHEMIN_ABSOLU = getcheminrelatif()
+# CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+CHEMIN_ABSOLU = "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
     """
-            Exemple :
-            dd == {'1' : ['ville1', 'ville2']}
-            dd['1']
-            Renvoie ['ville1', 'ville2']
+    Exemple :
+    dd == {'1' : ['ville1', 'ville2']}
+    dd['1']
+    Renvoie ['ville1', 'ville2']
 
-            dd['1'].append("ville3")
-            dd['1']
-            Renvoie ['ville1', 'ville2', 'ville3']
+    dd['1'].append("ville3")
+    dd['1']
+    Renvoie ['ville1', 'ville2', 'ville3']
     """
+
     # de 0 à n-1  # Remplacer par nb_villes si différent de nb_villes
     for i in range(nb_villes):
         codecommune = data_utile[i]["fields"]["code_commune"]
@@ -115,30 +112,9 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
                 myRangeDict['75-100'] += 1
             else:
                 print(f"dep:{dep} ; val:{val}")
-    print(myRangeDict)
-    print(
-        f"Somme = {myRangeDict['0'] + myRangeDict['0-25'] + myRangeDict['25-50'] + myRangeDict['50-75'] + myRangeDict['75-100']}")
-
-    # print(row['Pourcentage communes defavorisees'])
+    return myRangeDict
 
 
-def main():
-    json_brut = json.loads(requests.get(LIEN).text)
-
-    # Définition des constantes et déclaration des listes
-    NB_VILLES = json_brut["nhits"]
-    DATA_UTILE = json_brut["records"]
-
-    departement_dictM = remplir_dict_avec_villes(
-        departement_dict, DATA_UTILE, NB_VILLES)
-
-    pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
-
-    create_csv_file(pourcent_defavorise)
-    pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100()
-
-
-# end main
 
 
 """
@@ -149,6 +125,25 @@ for codeinsee in communes_dict.items():
     # url_json_dep = "https://geo.api.gouv.fr/communes?code={codeinsee[0]}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
     # url_json_dep_truc = json.loads(requests.get(url_json_dep).text)
 """
+
+
+
+
+def main():
+    json_brut = json.loads(requests.get(LIEN).text)
+
+    # Définition des constantes et déclaration des listes
+    NB_VILLES = json_brut["nhits"]
+    DATA_UTILE = json_brut["records"]
+
+    departement_dictM = remplir_dict_avec_villes(departement_dict, DATA_UTILE, NB_VILLES)
+
+    pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
+
+    create_csv_file(pourcent_defavorise)
+# end main
+
+
 
 # Run
 if __name__ == "__main__":

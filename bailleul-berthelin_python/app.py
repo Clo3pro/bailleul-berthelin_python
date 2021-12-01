@@ -4,7 +4,8 @@ from dash import html
 import plotly.express as px
 import pandas as pd
 
-from main import CHEMIN_ABSOLU
+from main import CHEMIN_ABSOLU, pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100
+
 
 app = dash.Dash(__name__)
 # command to launch: cloeberthelin$ /usr/local/bin/python3 /Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/app.py
@@ -27,7 +28,7 @@ fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
 """
 
 
-with open(CHEMIN_ABSOLU + "/pourcent_defavorise.csv", mode='r', encoding='utf8') as f:
+with open(CHEMIN_ABSOLU, mode='r', encoding='utf8') as f:
     dep_list = []
     pourcentage_list = []
     for elem in f:
