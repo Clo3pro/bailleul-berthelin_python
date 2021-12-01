@@ -30,15 +30,27 @@ fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
 """
 
 
+dep_list = []
+pourcentage_list = []
 with open(CHEMIN_ABSOLU, mode='r', encoding='utf8') as f:
-    dep_list = []
-    pourcentage_list = []
     for elem in f:
         dep_list.append([elem.split(',')[0]])
         pourcentage_list.append([elem.split(",")[1].split('\n')[0]])
-data = {'Dep': dep_list, 'Pourcent': pourcentage_list}
+
+depTitle = str(dep_list[0])
+depTitle = depTitle.split("['")[1].split("']")[0]
+
+pourcenTitle = str(pourcentage_list[0])
+pourcenTitle = pourcenTitle.split("['")[1].split("']")[0]
+pourcentage_list.pop(0)
+dep_list.pop(0)
+
+data = {depTitle: dep_list, pourcenTitle: pourcentage_list}
 #df = pd.DataFrame(data=data)
 tableDf = pd.DataFrame(data=data)
+
+
+
 def generate_table(dataframe, max_rows=100):
     return html.Table([
         html.Thead(
