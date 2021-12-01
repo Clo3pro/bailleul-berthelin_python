@@ -1,4 +1,3 @@
-from abc import _FuncT
 import csv
 import requests
 import json
@@ -97,6 +96,7 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
     with open(CHEMIN_ABSOLU, newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
+            breakpoint()
             dep = row['Departement']
             val = float(row['Pourcentage communes defavorisees'])
 
@@ -141,6 +141,8 @@ def main():
     pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
 
     create_csv_file(pourcent_defavorise)
+
+    pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100()
 # end main
 
 

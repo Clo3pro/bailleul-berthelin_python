@@ -4,8 +4,7 @@ from dash import html
 import plotly.express as px
 import pandas as pd
 
-from main import CHEMIN_ABSOLU, pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100
-
+from main import CHEMIN_ABSOLU, pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100 as dictRangePourcent
 
 app = dash.Dash(__name__)
 # command to launch: cloeberthelin$ /usr/local/bin/python3 /Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/app.py
@@ -16,7 +15,7 @@ colors = {
     'text': '#7FDBFF'
 }
 
-
+breakpoint
 
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
