@@ -10,15 +10,11 @@ LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-de
 
 
 def getcheminrelatif():
-    c = '/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv'
-    try:
-        with open(c, 'w'):
-            return "/Users/cloeberthelin/labo_school/bailleul-berthelin_python"
-    finally:
-        return "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python"
+    return '/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv'
+    # return "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 
-CHEMIN_RELATIF = getcheminrelatif()
+CHEMIN_ABSOLU = getcheminrelatif()
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
@@ -81,7 +77,7 @@ def pourcent_ville_defavorisee_par_dep(dep_dict):
 
 
 def create_csv_file(pourcent_defavorise):
-    with open(CHEMIN_RELATIF + '/bailleul-berthelin_python/pourcent_defavorise.csv', 'w', newline='') as csv_file:
+    with open(CHEMIN_ABSOLU, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(
             ['Departement', 'Pourcentage communes defavorisees'])
@@ -101,7 +97,7 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
         '50-75': 0,
         '75-100': 0
     }
-    with open(CHEMIN_RELATIF + '/bailleul-berthelin_python/pourcent_defavorise.csv', newline='') as csv_file:
+    with open(CHEMIN_ABSOLU, newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
             dep = row['Departement']
