@@ -49,7 +49,6 @@ data = {depTitle: dep_list, pourcenTitle: pourcentage_list}
 tableDf = pd.DataFrame(data=data)
 
 
-
 def generate_table(dataframe, max_rows=100):
     return html.Table([
         html.Thead(
@@ -60,13 +59,17 @@ def generate_table(dataframe, max_rows=100):
                 html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
             ]) for i in range(min(len(dataframe), max_rows))
         ])
-    ],className="tableColor")
+    ], className="tableColor")
+
+
+vtest = dictRangePourcent()
 
 df = pd.DataFrame({
-    "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-    "Amount": [4, 1, 2, 2, 4, 5]
+    "LesRanges": ['0', '0-25', '25-50', '50-75', '75-100'],
+    # "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
+    "Amount": [vtest['0'], vtest['0-25'], vtest['25-50'], vtest['50-75'], vtest['75-100']]
 })
-fig = px.bar(df,x="Fruit",y="Amount", barmode="group")
+fig = px.bar(df, x="LesRanges", y="Amount", barmode="group")
 
 
 fig.update_layout(
@@ -93,11 +96,11 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='example-graph-2',
         figure=fig
     ),
-	html.Div(children='test table', style={
+    html.Div(children='test table', style={
         'textAlign': 'center',
         'color': colors['text']
     }),
-	generate_table(tableDf)
+    generate_table(tableDf)
 ])
 """
 df = pd.read_csv('/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv')

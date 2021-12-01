@@ -8,8 +8,8 @@ from NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
 
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
-CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
-#CHEMIN_ABSOLU = "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+#CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+CHEMIN_ABSOLU = "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
@@ -96,7 +96,6 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
     with open(CHEMIN_ABSOLU, newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
-            breakpoint()
             dep = row['Departement']
             val = float(row['Pourcentage communes defavorisees'])
 
@@ -115,8 +114,6 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
     return myRangeDict
 
 
-
-
 """
 A FAIRE PLUS TARD (coordonnées GPS)
 # Récupérer les données géographiques des communes via code insee
@@ -127,8 +124,6 @@ for codeinsee in communes_dict.items():
 """
 
 
-
-
 def main():
     json_brut = json.loads(requests.get(LIEN).text)
 
@@ -136,15 +131,15 @@ def main():
     NB_VILLES = json_brut["nhits"]
     DATA_UTILE = json_brut["records"]
 
-    departement_dictM = remplir_dict_avec_villes(departement_dict, DATA_UTILE, NB_VILLES)
+    departement_dictM = remplir_dict_avec_villes(
+        departement_dict, DATA_UTILE, NB_VILLES)
 
     pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
 
     create_csv_file(pourcent_defavorise)
 
-    pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100()
+    # print(pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100())
 # end main
-
 
 
 # Run
