@@ -35,6 +35,7 @@ with open(CHEMIN_ABSOLU, mode='r', encoding='utf8') as f:
     for elem in f:
         dep_list.append([elem.split(',')[0]])
         pourcentage_list.append([elem.split(",")[1].split('\n')[0]])
+        breakpoint()
 
 depTitle = str(dep_list[0])
 depTitle = depTitle.split("['")[1].split("']")[0]
@@ -87,7 +88,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         }
     ),
 
-    html.Div(children='Villes en zone agricole défavorisée', style={
+    html.Div(children='Villes en zone agricole défavorisées', style={
         'textAlign': 'center',
         'color': colors['text']
     }),

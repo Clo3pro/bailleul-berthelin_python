@@ -56,6 +56,14 @@ def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
 
     return dep_dict
 
+# def annees_entreefunction(dep_dict, nb_villes):
+#     for dep in dep_dict.keys():
+#         for ville in dep_dict[dep]:
+#             villeName = dep_dict[dep][ville]
+
+            #breakpoint()
+
+
 
 def pourcent_ville_defavorisee_par_dep(dep_dict):
     """
@@ -76,9 +84,10 @@ def create_csv_file(pourcent_defavorise):
     with open(CHEMIN_ABSOLU, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(
-            ['Departement', 'Pourcentage communes defavorisees'])
+            ['Departement', 'Pourcentage communes defavorisees', 'Nombre total communes', 'Nombre communes defavorisees'])
         for k, v in pourcent_defavorise.items():
-            writer.writerow([k, v])
+            #breakpoint()
+            writer.writerow([k, v, nbCparD[k], int(nbCparD[k]*pourcent_defavorise[k]/100)])
     print(f'Ecriture terminée')
 
 
@@ -133,6 +142,8 @@ def main():
 
     departement_dictM = remplir_dict_avec_villes(
         departement_dict, DATA_UTILE, NB_VILLES)
+
+    #annees_entree = annees_entreefunction(departement_dictM, NB_VILLES)
 
     pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
 
