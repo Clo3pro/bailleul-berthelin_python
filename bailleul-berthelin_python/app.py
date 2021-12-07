@@ -1,6 +1,6 @@
 import dash
 from dash import dcc
-from dash import html
+from dash import html,Input, Output, State
 import plotly.express as px
 import pandas as pd
 
@@ -11,7 +11,7 @@ app = dash.Dash(__name__)
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
 colors = {
-    'background': '#111111',
+    'background': '#3D0085',
     'text': '#7FDBFF'
 }
 
@@ -73,7 +73,7 @@ def generate_table(dataframe, max_rows=100):
                 html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
             ]) for i in range(min(len(dataframe), max_rows))
         ])
-    ], className="tableColor")
+    ], className="table tableColor")
 
 
 vtest = dictRangePourcent()
@@ -92,7 +92,7 @@ fig.update_layout(
     font_color=colors['text']
 )
 
-app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
+app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'100vh'}, className='body m-0 px-3',children=[
     html.H1(
         children='Tableau de bord',
         style={
@@ -110,11 +110,29 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='example-graph-2',
         figure=fig
     ),
-    html.Div(className='bigBox row',children=[
-	html.H1(children='TABLEAU COMMUNES DEFAVORISÉES',className='titleclass col-12'),
-	html.Div(className='tableColor col-10  mx-3 table'),
-    generate_table(tableDf)])
+    html.Button('Afficher Tableau', id='btn-pullUp',className='btn btn-info ms-3', n_clicks=0),
+    html.Div(id='DaContainer',className='bigBox row px-3',style={'display':'none'},children=[ 
+        html.Div(children=[html.H3(id='DaTitle',children='TABLEAU COMMUNES DEFAVORISÉES',className='titleclass col-12'),
+        html.Div(id='DaTable',className=' col-10  px-3'),
+        generate_table(tableDf)])
+	])
 ])
+
+@app.callback(
+    Output(component_id='DaContainer', component_property='style'),
+    Input(component_id='btn-pullUp', component_property='n_clicks')
+)
+
+def displayTable(n_clicks):
+    if n_clicks%2 == 1:
+        return {'display': 'flex'}
+    else:
+        return {'display': 'none'}
+    
+
+
+
+
 """
 df = pd.read_csv('/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv')
 

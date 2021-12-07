@@ -1,8 +1,7 @@
 .tableColor{
 	/*background-color: #000000;*/
-    color: #FFFFFF;
+    color: #FFFFFF !important ;
 	border: 1px solid white;
-	border-top:none;
 	text-align:center;
 }
 .bigBox{
@@ -11,7 +10,6 @@
 }
 .titleclass{
 	color:tomato;
-	font-size: 20px;
 	font-family: 'Courier New', Courier, monospace;
 	font-weight:600;
 	text-align:center;
