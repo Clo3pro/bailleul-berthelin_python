@@ -31,21 +31,35 @@ fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
 
 dep_list = []
 pourcentage_list = []
+nb_total_ville = []
+nb_communes_defa = []
+
 with open(CHEMIN_ABSOLU, mode='r', encoding='utf8') as f:
     for elem in f:
         dep_list.append([elem.split(',')[0]])
         pourcentage_list.append([elem.split(",")[1].split('\n')[0]])
-        breakpoint()
+        nb_total_ville.append([elem.split(",")[2].split('\n')[0]])
+        nb_communes_defa.append([elem.split(",")[3].split('\n')[0]])
 
 depTitle = str(dep_list[0])
 depTitle = depTitle.split("['")[1].split("']")[0]
 
 pourcenTitle = str(pourcentage_list[0])
 pourcenTitle = pourcenTitle.split("['")[1].split("']")[0]
+
+nbtotalTitle = str(nb_total_ville[0])
+nbtotalTitle = nbtotalTitle.split("['")[1].split("']")[0]
+
+nbcommTitle = str(nb_communes_defa[0])
+nbcommTitle = nbcommTitle.split("['")[1].split("']")[0]
+
+
 pourcentage_list.pop(0)
 dep_list.pop(0)
+nb_total_ville.pop(0)
+nb_communes_defa.pop(0)
 
-data = {depTitle: dep_list, pourcenTitle: pourcentage_list}
+data = {depTitle: dep_list, pourcenTitle: pourcentage_list, nbtotalTitle: nb_total_ville, nbcommTitle: nb_communes_defa}
 #df = pd.DataFrame(data=data)
 tableDf = pd.DataFrame(data=data)
 
