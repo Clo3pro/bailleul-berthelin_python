@@ -9,7 +9,7 @@ from NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
 #CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
-CHEMIN_ABSOLU = "C:/Users/VALENTIN/Desktop/E3/python/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+CHEMIN_ABSOLU = "C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
@@ -56,6 +56,14 @@ def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
 
     return dep_dict
 
+# def annees_entreefunction(dep_dict, nb_villes):
+#     for dep in dep_dict.keys():
+#         for ville in dep_dict[dep]:
+#             villeName = dep_dict[dep][ville]
+
+            #breakpoint()
+
+
 
 def pourcent_ville_defavorisee_par_dep(dep_dict):
     """
@@ -76,9 +84,10 @@ def create_csv_file(pourcent_defavorise):
     with open(CHEMIN_ABSOLU, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(
-            ['Departement', 'Pourcentage communes defavorisees'])
+            ['Departement', 'Pourcentage communes defavorisees', 'Nombre total communes', 'Nombre communes defavorisees'])
         for k, v in pourcent_defavorise.items():
-            writer.writerow([k, v])
+            #breakpoint()
+            writer.writerow([k, v, nbCparD[k], int(nbCparD[k]*pourcent_defavorise[k]/100)])
     print(f'Ecriture terminée')
 
 
@@ -133,6 +142,8 @@ def main():
 
     departement_dictM = remplir_dict_avec_villes(
         departement_dict, DATA_UTILE, NB_VILLES)
+
+    #annees_entree = annees_entreefunction(departement_dictM, NB_VILLES)
 
     pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
 
