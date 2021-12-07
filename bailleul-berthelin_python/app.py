@@ -15,7 +15,6 @@ colors = {
     'text': '#7FDBFF'
 }
 
-breakpoint
 
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
@@ -111,11 +110,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='example-graph-2',
         figure=fig
     ),
-    html.Div(children='test table', style={
-        'textAlign': 'center',
-        'color': colors['text']
-    }),
-    generate_table(tableDf)
+    html.Div(className='bigBox row',children=[
+	html.H1(children='TABLEAU COMMUNES DEFAVORISÉES',className='titleclass col-12'),
+	html.Div(className='tableColor col-10  mx-3 table'),
+    generate_table(tableDf)])
 ])
 """
 df = pd.read_csv('/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv')
