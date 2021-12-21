@@ -9,7 +9,8 @@ from NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
 #CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
-CHEMIN_ABSOLU = "C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+# CHEMIN_ABSOLU = "C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/bailleul-berthelin_python/bailleul-berthelin_python/"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
@@ -108,6 +109,7 @@ def annees_entreefunction(dep_dict, nb_villes, dict_annees):
     #     for index_ville in range(len(dep_dict[dep])):
     #        ville = dep_dict[dep][index_ville]
 
+
 def nb_villes_par_annees(dict_annees):
     nb_ville_par_annee = {
         '1970-1975': 0,
@@ -150,7 +152,6 @@ def nb_villes_par_annees(dict_annees):
     return nb_ville_par_annee
 
 
-
 def create_csv_annees(annees_entree_dict):
     with open(CHEMIN_ABSOLU + 'annees_test.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
@@ -163,7 +164,6 @@ def create_csv_annees(annees_entree_dict):
     print(f'Ecriture terminée')
 
 
-
 def pourcent_ville_defavorisee_par_dep(dep_dict):
     pourcent_dict = dict()
     for numero_dep in dep_dict.keys():
@@ -174,7 +174,6 @@ def pourcent_ville_defavorisee_par_dep(dep_dict):
     return pourcent_dict
 
 
-
 def create_csv_file(pourcent_defavorise):
     with open(CHEMIN_ABSOLU + 'pourcent_defavorise.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
@@ -183,7 +182,6 @@ def create_csv_file(pourcent_defavorise):
         for k, v in pourcent_defavorise.items():
             writer.writerow([k, v, nbCparD[k], int(nbCparD[k]*pourcent_defavorise[k]/100)])
     print(f'Ecriture terminée')
-
 
 
 def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
