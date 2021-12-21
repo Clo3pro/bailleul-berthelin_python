@@ -3,8 +3,8 @@ import requests
 import json
 from requests.models import RequestEncodingMixin
 
-from data_init.DICT_DEP import departement_dict
-from data_init.NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
+from DICT_DEP import departement_dict
+from NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
 
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
@@ -96,7 +96,6 @@ def create_dict_annees(json_brut, nb_villes):
 def annees_entreefunction(dep_dict, nb_villes, dict_annees):
     dict_des_entrees_dans_defa = dict()
     for nomville in dict_annees.keys():
-        #breakpoint()
         for dep in dep_dict.keys():
             if(nomville in dep_dict[dep]):
                 dict_des_entrees_dans_defa[nomville] = dict_annees[nomville]
@@ -111,59 +110,77 @@ def annees_entreefunction(dep_dict, nb_villes, dict_annees):
 
 def nb_villes_par_annees(dict_annees):
     nb_ville_par_annee = {
-        '1960-1970': 0,
-        '1970-1980': 0,
-        '1980-1990': 0,
-        '1990-2000': 0,
-        '2000-2010': 0,
-        'test': 0
+        '1970-1975': 0,
+        '1975-1980': 0,
+        '1980-1985': 0,
+        '1985-1990': 0,
+        '1990-1995': 0,
+        '1995-2000': 0,
+        '2000-2005': 0,
+        '2005-2010': 0,
+        '2010-2015': 0,
+        '2015-2020': 0,
     }
 
     for nomville in dict_annees.keys():
         annee = int(dict_annees[nomville])
-        if 1980 < annee < 1990:
-            nb_ville_par_annee['1980-1990'] += 1
-        
+        if 1970 < annee <= 1975:
+            nb_ville_par_annee['1970-1975'] += 1
+        elif 1975 < annee <= 1980:
+            nb_ville_par_annee['1975-1980'] += 1
+        elif 1980 < annee <= 1985:
+            nb_ville_par_annee['1980-1985'] += 1
+        elif 1985 < annee <= 1990:
+            nb_ville_par_annee['1985-1990'] += 1
+        elif 1990 < annee <= 1995:
+            nb_ville_par_annee['1990-1995'] += 1
+        elif 1995 < annee <= 2000:
+            nb_ville_par_annee['1995-2000'] += 1
+        elif 2000 < annee <= 2005:
+            nb_ville_par_annee['2000-2005'] += 1
+        elif 2005 < annee <= 2010:
+            nb_ville_par_annee['2005-2010'] += 1
+        elif 2010 < annee <= 2015:
+            nb_ville_par_annee['2010-2015'] += 1
+        elif 2015 < annee <= 2020:
+            nb_ville_par_annee['2015-2020'] += 1
         else:
-            nb_ville_par_annee['test'] += 1
             breakpoint()
-        #nb_ville_par_annee[dict_annees[nomville]] += 1
 
     return nb_ville_par_annee
 
-# def create_csv_annees(annees_entree_dict):
-#     with open("C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/annees_test.csv", 'w', newline='') as csv_file:
-#         writer = csv.writer(csv_file)
-#         writer.writerow(
-#             ['Departement', 'Pourcentage communes defavorisees', 'Nombre total communes', 'Nombre communes defavorisees'])
-#         for k, v in pourcent_defavorise.items():
-#             #breakpoint()
-#             writer.writerow([k, v, nbCparD[k], int(nbCparD[k]*pourcent_defavorise[k]/100)])
-#     print(f'Ecriture terminée')
+
+
+def create_csv_annees(annees_entree_dict):
+    with open(CHEMIN_ABSOLU + 'annees_test.csv', 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(
+            ['Periode entree', 'Nombre de villes ajoutees cette periode']
+        )
+        for k, v in annees_entree_dict.items():
+            #breakpoint()
+            writer.writerow([k, v])
+    print(f'Ecriture terminée')
+
 
 
 def pourcent_ville_defavorisee_par_dep(dep_dict):
-    """
-
-    """
     pourcent_dict = dict()
-
     for numero_dep in dep_dict.keys():
         nb_defa = len(dep_dict[numero_dep])
         nb_comm = nbCparD[numero_dep]
         pourcent_dict[numero_dep] = round(
             float(nb_defa) * 100 / float(nb_comm), 2)
-
     return pourcent_dict
 
 
+
 def create_csv_file(pourcent_defavorise):
-    with open(CHEMIN_ABSOLU, 'w', newline='') as csv_file:
+    with open(CHEMIN_ABSOLU + 'pourcent_defavorise.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(
             ['Departement', 'Pourcentage communes defavorisees', 'Nombre total communes', 'Nombre communes defavorisees'])
         for k, v in pourcent_defavorise.items():
-            #breakpoint()
             writer.writerow([k, v, nbCparD[k], int(nbCparD[k]*pourcent_defavorise[k]/100)])
     print(f'Ecriture terminée')
 
@@ -180,7 +197,7 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
         '50-75': 0,
         '75-100': 0
     }
-    with open(CHEMIN_ABSOLU, newline='') as csv_file:
+    with open(CHEMIN_ABSOLU + 'pourcent_defavorise.csv', newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
             dep = row['Departement']
@@ -224,14 +241,14 @@ def main():
 
     dict_annees = create_dict_annees(json_brut, NB_VILLES)
     annees_entree_dict = annees_entreefunction(departement_dictM, NB_VILLES, dict_annees)
-    nb_villes_annees = nb_villes_par_annees(dict_annees)
-    breakpoint()
-    create_csv_annees(annees_entree_dict)
 
 
     pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
-
     create_csv_file(pourcent_defavorise)
+
+    
+    nb_villes_annees = nb_villes_par_annees(dict_annees)
+    create_csv_annees(nb_villes_annees)
 
     # print(pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100())
 # end main
