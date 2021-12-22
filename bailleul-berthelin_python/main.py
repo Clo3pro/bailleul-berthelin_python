@@ -14,10 +14,10 @@ LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-de
 # CHEMIN_ABSOLU = "C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 #nouveau pc
-# CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/bailleul-berthelin_python/bailleul-berthelin_python/"
+CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
 
 #pc entreprise
-CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/Rep/bailleul-berthelin_python/bailleul-berthelin_python/"
+# CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/Rep/bailleul-berthelin_python/bailleul-berthelin_python/"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
@@ -53,14 +53,6 @@ def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
         except KeyError:
             print("\n\n\nBug ici\n\n\n")
             breakpoint()
-
-    """
-    # tests pour dep sans ville:
-    for dep in list(dep_dict):
-    if len(dep_dict[dep]) == 0:
-    dep_dict.pop(dep)
-    # breakpoint()
-    """
 
     return dep_dict
 
@@ -223,17 +215,83 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
     return myRangeDict
 
 
-def recup_position_geog_via_code_insee(departement_dictM):
-    """
-        A FAIRE PLUS TARD (coordonnées GPS)
-        # Récupérer les données géographiques des communes via code insee
-        for codeinsee in communes_dict.items():
-            print(codeinsee[0])
-            # url_json_dep = "https://geo.api.gouv.fr/communes?code={codeinsee[0]}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
-            # url_json_dep_truc = json.loads(requests.get(url_json_dep).text)
-    """
-    #   ECRIRE FONCTION ICI
-    pass
+def recup_insee_via_ville(departement_dictM, DATA_UTILE, NB_VILLES):
+    dict_ville_insee = dict()
+    for i in range(NB_VILLES):
+        codecommune = DATA_UTILE[i]["fields"]["code_commune"]
+        nomcommune = DATA_UTILE[i]["fields"]["nom_commune"]
+        dict_ville_insee[nomcommune] = codecommune
+    return dict_ville_insee
+
+
+def recup_position_geog_via_code_insee(dict_ville_insee_dep_plus_touche):
+        """
+            A FAIRE PLUS TARD (coordonnées GPS)
+            # Récupérer les données géographiques des communes via code insee
+            for codeinsee in communes_dict.items():
+                print(codeinsee[0])
+                # url_json_dep = "https://geo.api.gouv.fr/communes?code={codeinsee[0]}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
+                # url_json_dep_truc = json.loads(requests.get(url_json_dep).text)
+        """
+        #   ECRIRE FONCTION ICI
+
+        dict_ville_position = dict()
+        """
+        'Montévrain': {
+            'code_insee': '77307',
+            'longitude': 'yyyyyyyyyyy',
+            'latitude': 'xxxxxxxxxx',
+        },
+        """
+
+        """
+        appel api de TOUTES les villes du département,
+        avec nom et codeinsee des défa
+        compare codes insee
+        on pop les pas défa
+        """
+
+        with open(CHEMIN_ABSOLU + 'location_ville.geojson', 'w') as my_geojson:
+            for dep in dict_ville_insee_dep_plus_touche.items():
+                try :
+                    nomville = dep[0]
+                    codeinsee = int(dep[1])
+
+                    url_json_dep = f"https://geo.api.gouv.fr/communes?code={codeinsee}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
+                    json_commune = json.loads(requests.get(url_json_dep).text)
+                    position = json_commune["features"][0]["geometry"]["coordinates"][0][0]
+                    breakpoint()
+                    longitude = position[0]
+                    latitude = position[1]
+                    dict_ville_position[nomville] = {
+                        'code_insee': codeinsee,
+                        'longitude': longitude,
+                        'latitude': latitude,
+                    }
+                except IndexError:
+                    continue
+
+        return dict_ville_position
+
+def recup_dep_le_plus_touche(pourcent_defavorise):
+    max = 0
+    dep_max = ''
+    for dep in pourcent_defavorise.items():
+        if max < dep[1]:
+            max = dep[1]
+            dep_max = dep[0]
+    return dep_max
+
+
+def recup_insee_dep_touche(dict_ville_insee, dep_plus_touche):
+    dict_ville_insee_plus_touche = dict()
+    for ville in dict_ville_insee.items():
+        dep_actuel = (ville[1])[0:2]
+        if dep_actuel == dep_plus_touche:
+            nomville = ville[0]
+            codeinsee = ville[1]
+            dict_ville_insee_plus_touche[nomville] = codeinsee
+    return dict_ville_insee_plus_touche
 
 
 def main():
@@ -245,7 +303,7 @@ def main():
 
     departement_dictM = remplir_dict_avec_villes(
         departement_dict, DATA_UTILE, NB_VILLES)
-
+    
 
     dict_annees = create_dict_annees(json_brut, NB_VILLES)
     annees_entree_dict = annees_entreefunction(departement_dictM, NB_VILLES, dict_annees)
@@ -259,9 +317,14 @@ def main():
     create_csv_annees(nb_villes_annees)
 
 
-    renommer = recup_position_geog_via_code_insee(departement_dictM)
 
-    # print(pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100())
+    dict_ville_insee = recup_insee_via_ville(departement_dictM, DATA_UTILE, NB_VILLES)
+
+    dep_plus_touche = recup_dep_le_plus_touche(pourcent_defavorise)
+    dict_ville_insee_dep_plus_touche = recup_insee_dep_touche(dict_ville_insee, dep_plus_touche)
+    dict_ville_position = recup_position_geog_via_code_insee(dict_ville_insee_dep_plus_touche)
+    breakpoint()
+
 # end main
 
 
