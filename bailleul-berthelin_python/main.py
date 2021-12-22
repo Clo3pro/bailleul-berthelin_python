@@ -9,8 +9,15 @@ from NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
 #CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+
+#vieux pc
 # CHEMIN_ABSOLU = "C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
-CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/bailleul-berthelin_python/bailleul-berthelin_python/"
+
+#nouveau pc
+# CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/bailleul-berthelin_python/bailleul-berthelin_python/"
+
+#pc entreprise
+CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/Rep/bailleul-berthelin_python/bailleul-berthelin_python/"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
@@ -161,7 +168,7 @@ def create_csv_annees(annees_entree_dict):
         for k, v in annees_entree_dict.items():
             #breakpoint()
             writer.writerow([k, v])
-    print(f'Ecriture terminée')
+    print(f'Ecriture termin\u00e9e')
 
 
 def pourcent_ville_defavorisee_par_dep(dep_dict):
@@ -216,14 +223,17 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
     return myRangeDict
 
 
-"""
-    A FAIRE PLUS TARD (coordonnées GPS)
-    # Récupérer les données géographiques des communes via code insee
-    for codeinsee in communes_dict.items():
-        print(codeinsee[0])
-        # url_json_dep = "https://geo.api.gouv.fr/communes?code={codeinsee[0]}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
-        # url_json_dep_truc = json.loads(requests.get(url_json_dep).text)
-"""
+def recup_position_geog_via_code_insee(departement_dictM):
+    """
+        A FAIRE PLUS TARD (coordonnées GPS)
+        # Récupérer les données géographiques des communes via code insee
+        for codeinsee in communes_dict.items():
+            print(codeinsee[0])
+            # url_json_dep = "https://geo.api.gouv.fr/communes?code={codeinsee[0]}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
+            # url_json_dep_truc = json.loads(requests.get(url_json_dep).text)
+    """
+    #   ECRIRE FONCTION ICI
+    pass
 
 
 def main():
@@ -247,6 +257,9 @@ def main():
     
     nb_villes_annees = nb_villes_par_annees(dict_annees)
     create_csv_annees(nb_villes_annees)
+
+
+    renommer = recup_position_geog_via_code_insee(departement_dictM)
 
     # print(pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100())
 # end main

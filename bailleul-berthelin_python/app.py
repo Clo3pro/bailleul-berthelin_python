@@ -33,7 +33,7 @@ pourcentage_list = []
 nb_total_ville = []
 nb_communes_defa = []
 
-with open(CHEMIN_ABSOLU, mode='r', encoding='utf8') as f:
+with open(CHEMIN_ABSOLU + 'pourcent_defavorise.csv', mode='r', encoding='utf8') as f:
     for elem in f:
         dep_list.append([elem.split(',')[0]])
         pourcentage_list.append([elem.split(",")[1].split('\n')[0]])
