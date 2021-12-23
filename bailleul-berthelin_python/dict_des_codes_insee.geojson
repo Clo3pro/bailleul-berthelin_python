@@ -1,21 +1,21 @@
 {
     "type": "FeatureCollection",
-    "features": [
+    "features":
+    [
         {
             "type": "Feature",
             "properties": {
                 "nom": "Crèvecœur-en-Brie",
                 "code": "77144",
-                "codesPostaux": [
-                    "77610"
-                ],
+                "codesPostaux": ["77610"],
                 "codeDepartement": "77",
                 "codeRegion": "11",
                 "population": 394
             },
             "geometry": {
                 "type": "Polygon",
-                "coordinates": [
+                "coordinates":
+                [
                     [
                         [
                             2.89309,
