@@ -24,11 +24,12 @@ https://public.opendatasoft.com/explore/dataset/liste-des-communes-classees-en-z
 INSTALLATION
 
 
-installer conda
--> conda install -c anaconda requests
+	// installer conda
+	// -> conda install -c anaconda requests
 ouvrir Anaconda Navigator via windows
 powershell prompt
--> python -m pip install requests
+->	python -m pip install requests
+->	python -m pip install dash
 dans VS Code
 ctrl shift p
 Python : select interpreter

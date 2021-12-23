@@ -16,10 +16,10 @@ LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-de
 # CHEMIN_ABSOLU = "C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 #nouveau pc
-# CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
+CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
 
 #pc entreprise
-CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/Rep/Python/bailleul-berthelin_python/"
+# CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/Rep/Python/bailleul-berthelin_python/"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
