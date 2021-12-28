@@ -7,6 +7,7 @@ from dash import dcc
 from dash import html,Input, Output, State
 import plotly.express as px
 import pandas as pd
+import branca
 
 from main import CHEMIN_ABSOLU, pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100 as dictRangePourcent
 
@@ -18,8 +19,10 @@ colors = {
     'background': '#3D0085',
     'text': '#7FDBFF'
 }
-
-map = folium.Map(location=[45.5236, -122.6750])
+defaData = "location_ville.geojson"
+map = folium.Map(location=[45.156891, 0.730795],zoom_start="9")
+folium.GeoJson(defaData, name="Communes défavorisées du département le plus touché").add_to(map)
+folium.LayerControl().add_to(map)
 map.save('cartographie.html')
 
 # assume you have a "long-form" data frame
@@ -85,11 +88,11 @@ def generate_table(dataframe, max_rows=100):
 vtest = dictRangePourcent()
 
 df = pd.DataFrame({
-    "LesRanges": ['0', '0-25', '25-50', '50-75', '75-100'],
+    "Pourcentage de communes défavorisées": ['0', '0-25', '25-50', '50-75', '75-100'],
     # "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-    "Amount": [vtest['0'], vtest['0-25'], vtest['25-50'], vtest['50-75'], vtest['75-100']]
+    "Nombre de départements": [vtest['0'], vtest['0-25'], vtest['25-50'], vtest['50-75'], vtest['75-100']]
 })
-fig = px.bar(df, x="LesRanges", y="Amount", barmode="group")
+fig = px.bar(df, x="Pourcentage de communes défavorisées", y="Nombre de départements", barmode="group")
 
 
 fig.update_layout(
@@ -116,17 +119,26 @@ app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'1
         id='example-graph-2',
         figure=fig
     ),
-    html.Button('Afficher Tableau', id='btn-pullUp',className='btn btn-info ms-3', n_clicks=0),
-    html.Div(id='DaContainer',className='bigBox row px-3',style={'display':'none'}, children=[ 
+	html.Div(id="buttonContainer", className="row px-3 text-center flex-sm-row", children=[
+    html.Button('Afficher Tableau', id='btn-pullUp',className=' col-2 btn btn-outline-info ms-3', n_clicks=0),
+	html.Button('Afficher Carte', id='btn-pullUpMap',className='col-2 btn btn-outline-info ms-3', n_clicks=0)
+	]),
+    html.Div(id='DaContainer',className='bigBox row px-3 text-center',style={'display':'none'}, children=[ 
         html.H3(id='DaTitle',children='TABLEAU COMMUNES DEFAVORISÉES',className='titleclass col-12'),
         html.Div(id='DaTable',className=' col-10  px-3',children=[ generate_table(tableDf)])
+	]),
+	html.Div(id="mapContainer",className="mx-2 my-2",children=[
+		html.H3(children="CARTOGRAPHIE DU DÉPARTEMENT LE PLUS TOUCHÉ",className='titleclass col-12'),
+		html.Iframe(id='map',srcDoc=open("cartographie.html",'r').read(),className="px-1",width='100%',height='600')
 	])
+	
 ])
 
 @app.callback(
     Output(component_id='DaContainer', component_property='style'),
     Input(component_id='btn-pullUp', component_property='n_clicks')
 )
+
 
 def displayTable(n_clicks):
     if n_clicks%2 == 1:
