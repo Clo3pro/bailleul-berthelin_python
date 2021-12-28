@@ -1,3 +1,7 @@
+from importlib import import_module
+
+
+import folium
 import dash
 from dash import dcc
 from dash import html,Input, Output, State
@@ -15,6 +19,8 @@ colors = {
     'text': '#7FDBFF'
 }
 
+map = folium.Map(location=[45.5236, -122.6750])
+map.save('cartographie.html')
 
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
@@ -73,7 +79,7 @@ def generate_table(dataframe, max_rows=100):
                 html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
             ]) for i in range(min(len(dataframe), max_rows))
         ])
-    ], className="table tableColor")
+    ], className="table tableColor",id='')
 
 
 vtest = dictRangePourcent()
@@ -92,7 +98,7 @@ fig.update_layout(
     font_color=colors['text']
 )
 
-app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'100vh'}, className='body m-0 px-3',children=[
+app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'100%'}, className='body m-0 px-3',children=[
     html.H1(
         children='Tableau de bord',
         style={
@@ -111,10 +117,9 @@ app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'1
         figure=fig
     ),
     html.Button('Afficher Tableau', id='btn-pullUp',className='btn btn-info ms-3', n_clicks=0),
-    html.Div(id='DaContainer',className='bigBox row px-3',style={'display':'none'},children=[ 
-        html.Div(children=[html.H3(id='DaTitle',children='TABLEAU COMMUNES DEFAVORISÉES',className='titleclass col-12'),
-        html.Div(id='DaTable',className=' col-10  px-3'),
-        generate_table(tableDf)])
+    html.Div(id='DaContainer',className='bigBox row px-3',style={'display':'none'}, children=[ 
+        html.H3(id='DaTitle',children='TABLEAU COMMUNES DEFAVORISÉES',className='titleclass col-12'),
+        html.Div(id='DaTable',className=' col-10  px-3',children=[ generate_table(tableDf)])
 	])
 ])
 

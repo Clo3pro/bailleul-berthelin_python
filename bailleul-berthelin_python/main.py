@@ -10,13 +10,13 @@ from datetime import datetime
 
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
-#CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 #vieux pc
 # CHEMIN_ABSOLU = "C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 #nouveau pc
-CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
+#CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
 
 #pc entreprise
 # CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/Rep/Python/bailleul-berthelin_python/"
