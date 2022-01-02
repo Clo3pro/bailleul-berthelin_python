@@ -1,17 +1,21 @@
 from importlib import import_module
 
-
-import folium
 import dash
 from dash import dcc
 from dash import html,Input, Output, State
+from dash import dash_table
 import plotly.express as px
+import folium
+from folium import GeoJsonTooltip
 import pandas as pd
 import branca
+import dash_bootstrap_components as dbc
+import geopandas as gdp
 
 from main import CHEMIN_ABSOLU, pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100 as dictRangePourcent
 
 app = dash.Dash(__name__)
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 # command to launch: cloeberthelin$ /usr/local/bin/python3 /Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/app.py
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
@@ -19,11 +23,6 @@ colors = {
     'background': '#3D0085',
     'text': '#7FDBFF'
 }
-defaData = "location_ville.geojson"
-map = folium.Map(location=[45.156891, 0.730795],zoom_start="9")
-folium.GeoJson(defaData, name="Communes défavorisées du département le plus touché").add_to(map)
-folium.LayerControl().add_to(map)
-map.save('cartographie.html')
 
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
@@ -66,13 +65,40 @@ pourcentage_list.pop(0)
 dep_list.pop(0)
 nb_total_ville.pop(0)
 nb_communes_defa.pop(0)
+map2Data = pd.read_csv("./pourcent_defavorise.csv")
 
 data = {depTitle: dep_list, pourcenTitle: pourcentage_list, nbtotalTitle: nb_total_ville, nbcommTitle: nb_communes_defa}
 #df = pd.DataFrame(data=data)
 tableDf = pd.DataFrame(data=data)
+vtest = dictRangePourcent()
+depContours = "departements.geojson"
 
+###### Création Cartes ########
+defaData = "location_ville.geojson"
+map = folium.Map(location=[45.156891, 0.730795],zoom_start="9")
+folium.GeoJson(defaData, name="Communes défavorisées du département le plus touché").add_to(map)
+folium.LayerControl().add_to(map)
+map.save('cartographie.html')
 
-def generate_table(dataframe, max_rows=100):
+##bins = data["Pourcentage communes defavorisees"].quantile([0, 0.25, 0.5, 0.75, 1])
+
+map2 = folium.Map(location=[47.998, 1.747],zoom_start="6",scrollWheelZoom=True)
+g =folium.Choropleth(
+	geo_data=depContours,
+    name="Pourcentage de communes défavorisées par département",
+    data=map2Data,
+    columns=["Departement","Pourcentage communes defavorisees"],
+    fill_color="YlOrRd",
+	key_on='properties.code',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+	highlight=True,
+    legend_name="Communes défavorisées par Département (%)").add_to(map2)
+folium.LayerControl().add_to(map2)
+
+map2.save('carto2.html')
+#### Création Tableau ####
+def generate_table(dataframe, max_rows=50):
     return html.Table([
         html.Thead(
             html.Tr([html.Th(col) for col in dataframe.columns])
@@ -81,11 +107,22 @@ def generate_table(dataframe, max_rows=100):
             html.Tr([
                 html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
             ]) for i in range(min(len(dataframe), max_rows))
-        ])
-    ], className="table tableColor",id='')
+        ]
+    )
+    ], className="table tableColor",style={"overflowY": 'auto'}
+	)
+""" def generate_table(dataframe, max_rows=100):
+    breakpoint()
+    return dash_table.DataTable(columns=[[{'id': c, 'name': c} for c in dataframe.columns]],
+        data= dataframe
+        ,
+        style_table={
+            'height': 500,
+            'overflowY': 'scroll',
+            'width': 800
+        }) """
 
 
-vtest = dictRangePourcent()
 
 df = pd.DataFrame({
     "Pourcentage de communes défavorisées": ['0', '0-25', '25-50', '50-75', '75-100'],
@@ -101,7 +138,7 @@ fig.update_layout(
     font_color=colors['text']
 )
 
-app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'100%'}, className='body m-0 px-3',children=[
+app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'100% !important'}, className=" m-0 px-3",children=[
     html.H1(
         children='Tableau de bord',
         style={
@@ -119,59 +156,67 @@ app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'1
         id='example-graph-2',
         figure=fig
     ),
-	html.Div(id="buttonContainer", className="row px-3 text-center flex-sm-row", children=[
-    html.Button('Afficher Tableau', id='btn-pullUp',className=' col-2 btn btn-outline-info ms-3', n_clicks=0),
-	html.Button('Afficher Carte', id='btn-pullUpMap',className='col-2 btn btn-outline-info ms-3', n_clicks=0)
+	html.Div(id="buttonContainer", className="row px-3 text-center flex-sm-row py-3", children=[
+    dbc.Button("Tableau pourcentage communes défas par dép",outline=True, color="info",id='btn-pullUp',class_name=' col-3 me-3', n_clicks=0),
+	dbc.Button("Carte département le plus touché",outline=True,color="info", id='btn-pullUpMap',class_name='col-3 me-3', n_clicks=0),
+	dbc.Button("Carte pourcentage par département",outline=True,color="info", id='btn-pullUpMap2',class_name='col-3 me-3', n_clicks=0)
 	]),
-    html.Div(id='DaContainer',className='bigBox row px-3 text-center',style={'display':'none'}, children=[ 
+    dbc.Collapse(id='DaContainer',is_open=False,className='bigBox row px-3 text-center', children=[ 
         html.H3(id='DaTitle',children='TABLEAU COMMUNES DEFAVORISÉES',className='titleclass col-12'),
-        html.Div(id='DaTable',className=' col-10  px-3',children=[ generate_table(tableDf)])
+        html.Div(id='DaTable',className=' col-10 offset-1 px-3',children=[ generate_table(tableDf)])
 	]),
-	html.Div(id="mapContainer",className="mx-2 my-2",children=[
+	dbc.Collapse(id="mapContainer",is_open=False,className="mx-2 my-2",children=[
 		html.H3(children="CARTOGRAPHIE DU DÉPARTEMENT LE PLUS TOUCHÉ",className='titleclass col-12'),
-		html.Iframe(id='map',srcDoc=open("cartographie.html",'r').read(),className="px-1",width='100%',height='600')
+		html.Iframe(id='map',srcDoc=open("cartographie.html",'r').read(),className="px-1",width='100%',height='500')
+	]),
+	dbc.Collapse(id="map2Container",is_open=False,className="mx-2 my-2",children=[
+		html.H3(children="CARTOGRAPHIE DU POURCENTAGE DE COMMUNES DÉFAVORISÉES PAR DÉPARTEMENT",className='titleclass col-12'),
+		html.Iframe(id='map2',srcDoc=open("carto2.html",'r').read(),className="px-1",width='100%',height='600')
 	])
 	
 ])
 
 @app.callback(
-    Output(component_id='DaContainer', component_property='style'),
-    Input(component_id='btn-pullUp', component_property='n_clicks')
+    
+	Output("DaContainer", "is_open"),
+    [Input("btn-pullUp", "n_clicks")],
+    [State("DaContainer", "is_open")],
 )
 
 
-def displayTable(n_clicks):
-    if n_clicks%2 == 1:
-        return {'display': 'flex'}
-    else:
-        return {'display': 'none'}
+def displayTable(n, is_open):
+    if n:
+        return not is_open
+    return is_open
     
 
+@app.callback(
+    
+	Output("mapContainer", "is_open"),
+    [Input("btn-pullUpMap", "n_clicks")],
+    [State("mapContainer", "is_open")],
+)
 
 
-
-"""
-df = pd.read_csv('/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv')
-
-def generate_table(dataframe, max_rows=100):
-	return html.Table([
-		html.Thead(
-			html.Tr([html.Th(col) for col in dataframe.columns])
-		),
-		html.Tbody([
-			html.Tr([
-				html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-			]) for i in range(min(len(dataframe), max_rows))
-		])
-	])
+def displayMap(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+    
+@app.callback(
+    
+	Output("map2Container", "is_open"),
+    [Input("btn-pullUpMap2", "n_clicks")],
+    [State("map2Container", "is_open")],
+)
 
 
-app = dash.Dash(__name__)
+def displayMap(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+   
 
-app.layout = html.Div([
-	html.H4(children='Pourcentage zones agricoles défavorisées par département en France (2017)'),
-	generate_table(df)
-])"""
 
 if __name__ == '__main__':
     app.run_server(debug=True)
