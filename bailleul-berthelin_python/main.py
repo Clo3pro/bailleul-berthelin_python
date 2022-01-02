@@ -10,13 +10,13 @@ from datetime import datetime
 
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
-CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+# CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 #vieux pc
 # CHEMIN_ABSOLU = "C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 #nouveau pc
-#CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
+CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
 
 #pc entreprise
 # CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/Rep/Python/bailleul-berthelin_python/"
@@ -162,7 +162,7 @@ def create_csv_annees(annees_entree_dict):
         for k, v in annees_entree_dict.items():
             #breakpoint()
             writer.writerow([k, v])
-    print(f'Ecriture termin\u00e9e')
+    # print(f'Ecriture termin\u00e9e')
 
 
 def pourcent_ville_defavorisee_par_dep(dep_dict):
@@ -182,7 +182,7 @@ def create_csv_file(pourcent_defavorise):
             ['Departement', 'Pourcentage communes defavorisees', 'Nombre total communes', 'Nombre communes defavorisees'])
         for k, v in pourcent_defavorise.items():
             writer.writerow([k, v, nbCparD[k], int(nbCparD[k]*pourcent_defavorise[k]/100)])
-    print(f'Ecriture terminée')
+    # print(f'Ecriture terminée')
 
 
 def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
@@ -253,12 +253,8 @@ def ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche):
         on pop les pas défa
         """
 
-
-
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        print("date and time =", dt_string)
-
+        print("\tDébut d'écriture du GeoJSON...")
+        debut = datetime.now()
 
 
         with open(CHEMIN_ABSOLU + 'location_ville.geojson', 'w') as my_geojson:
@@ -358,12 +354,11 @@ def ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche):
             my_geojson.write('}')
 
 
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        print("date and time =", dt_string)
+        fin = datetime.now()
+        total = fin - debut
+        total_seconds = total.total_seconds()
+        print(f"\tTerminé.\n\tDurée de traitement : {total_seconds} secondes.\n")
 
-        
-        print("Ecriture terminée")
         return dict_ville_position
 
 def recup_dep_le_plus_touche(pourcent_defavorise):
