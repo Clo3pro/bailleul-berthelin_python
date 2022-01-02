@@ -5,8 +5,10 @@ ESIEE PARIS - E3FI 1I
 Janvier 2022  
 ## Installation
 - Cloner le dépôt :
-    - **git clone https://github.com/Clo3pro/bailleul-berthelin_python.git**
-- Ouvrir une Invite de Commandes
+    - git clone *https://github.com/Clo3pro/bailleul-berthelin_python.git*
+- /!\ **Ouvrir Powershell Prompt d'Anaconda**
+- Installer les libraires :
+    - **python -m pip install Dash Pandas Folium plotly.express branca dash_bootstrap_components requests geopandas**
 - Entrer :
     - **cd {*CheminVersLeDossierCloné*}\**
     - **python main.py** (prend environ 45 sec à générer le GeoJSON)
