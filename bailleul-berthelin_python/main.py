@@ -363,7 +363,7 @@ def main():
 
     dep_plus_touche = recup_dep_le_plus_touche(pourcent_defavorise)
     dict_ville_insee_dep_plus_touche = recup_insee_dep_touche(dict_ville_insee, dep_plus_touche)
-    # ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche)
+    ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche)
 
 
 
