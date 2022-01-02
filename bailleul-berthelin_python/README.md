@@ -9,6 +9,6 @@ Janvier 2022
 - Cloner le dépôt
 - Ouvrir un cmd
 - Entrer :
-- - cd C:\Users\valen\OneDrive\Bureau\E3\Python\bailleul-berthelin_python\
-- - python main.py
-- - app.py
+    - cd C:\Users\valen\OneDrive\Bureau\E3\Python\bailleul-berthelin_python\
+    - python main.py
+    - app.py

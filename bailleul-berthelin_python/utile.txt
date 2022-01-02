@@ -1,7 +1,7 @@
 
 Pour récupérer le Git :
 	cd adresse_du_clonage
-	git clone https://git.esiee.fr/bailleuv/bailleul-berthelin-python-project.git
+	git clone https://github.com/Clo3pro/bailleul-berthelin_python
 
 
 Pour déposer le Git :
