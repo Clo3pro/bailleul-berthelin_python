@@ -10,16 +10,10 @@ from datetime import datetime
 
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
-CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
+# CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
-#vieux pc
-# CHEMIN_ABSOLU = "C:/Users/bailleuv/Desktop/deletefile/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
-
-#nouveau pc
-#CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
-
-#pc entreprise
-# CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/Rep/Python/bailleul-berthelin_python/"
+# CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
+CHEMIN_ABSOLU = "./bailleul-berthelin_python"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
@@ -162,7 +156,7 @@ def create_csv_annees(annees_entree_dict):
         for k, v in annees_entree_dict.items():
             #breakpoint()
             writer.writerow([k, v])
-    print(f'Ecriture termin\u00e9e')
+    # print(f'Ecriture termin\u00e9e')
 
 
 def pourcent_ville_defavorisee_par_dep(dep_dict):
@@ -182,7 +176,7 @@ def create_csv_file(pourcent_defavorise):
             ['Departement', 'Pourcentage communes defavorisees', 'Nombre total communes', 'Nombre communes defavorisees'])
         for k, v in pourcent_defavorise.items():
             writer.writerow([k, v, nbCparD[k], int(nbCparD[k]*pourcent_defavorise[k]/100)])
-    print(f'Ecriture terminée')
+    # print(f'Ecriture terminée')
 
 
 def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
@@ -226,6 +220,87 @@ def recup_insee_via_ville(departement_dictM, DATA_UTILE, NB_VILLES):
     return dict_ville_insee
 
 
+def write_geojson(my_geojson, dep, nb_ville, i_ville):
+    try :
+        nomville = dep[0]
+        codeinsee = int(dep[1]) # important
+
+        url_json_dep = f"https://geo.api.gouv.fr/communes?code={codeinsee}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
+        json_commune = json.loads(requests.get(url_json_dep).text)
+        # position = json_commune["features"][0]["geometry"]["coordinates"][0]
+        
+        # longitude = position[0] # important
+        # latitude = position[1] # important
+        type_ville      = json_commune["features"][0]["type"]
+        properties_ville= json_commune["features"][0]["properties"]
+        geometry_ville  = json_commune["features"][0]["geometry"]["coordinates"][0]
+        
+        
+        # "type": "Feature",
+        my_geojson.write('\t\t{\n')
+        my_geojson.write('\t\t\t"type" : "Feature",\n')
+
+        #"properties": {
+        my_geojson.write('\t\t\t"properties" : {\n')
+        my_geojson.write('\t\t\t\t"nom": "' + json_commune["features"][0]["properties"]["nom"] + '",\n')
+        my_geojson.write('\t\t\t\t"code": "' + json_commune["features"][0]["properties"]["code"] + '",\n')
+        my_geojson.write('\t\t\t\t"codesPostaux": "' + json_commune["features"][0]["properties"]["codesPostaux"][0] + '",\n')
+        my_geojson.write('\t\t\t\t"codeDepartement": "' + json_commune["features"][0]["properties"]["codeDepartement"] + '",\n')
+        my_geojson.write('\t\t\t\t"codeRegion": "' + json_commune["features"][0]["properties"]["codeRegion"] + '",\n')
+        my_geojson.write('\t\t\t\t"population": "' + str(json_commune["features"][0]["properties"]["population"]) + '"\n')
+        my_geojson.write('\t\t\t},\n')
+
+        #"geometry"
+        my_geojson.write('\t\t\t"geometry": {\n')
+        my_geojson.write('\t\t\t\t"type": "' + json_commune["features"][0]["geometry"]["type"] + '",\n')
+        my_geojson.write('\t\t\t\t"coordinates":\n')
+        my_geojson.write('\t\t\t\t[\n')
+        my_geojson.write('\t\t\t\t\t[\n')
+
+
+        taille = len(geometry_ville)
+        i = 1
+        for localisation in geometry_ville:
+            my_geojson.write('\t\t\t\t\t\t[\n')
+
+            my_geojson.write('\t\t\t\t\t\t\t' + str(localisation[0]) + ',\n')
+            my_geojson.write('\t\t\t\t\t\t\t' + str(localisation[1]) + '\n')
+            
+            if i != taille :
+                my_geojson.write('\t\t\t\t\t\t],\n')
+            else :
+                my_geojson.write('\t\t\t\t\t\t]\n')
+
+            i += 1
+
+
+
+        my_geojson.write('\t\t\t\t\t]\n')
+        my_geojson.write('\t\t\t\t]\n')
+        my_geojson.write('\t\t\t}\n')
+
+        if i_ville != nb_ville :
+            my_geojson.write('\t\t},\n')
+        else:
+            my_geojson.write('\t\t}\n')
+            return
+
+        i_ville += 1
+
+        # for pv in properties_ville.items():
+        #     breakpoint()
+        #     my_geojson.write(pv)
+        # for gv in geometry_ville.items():
+        #     my_geojson.write(gv)
+        # break
+        # breakpoint()
+        
+
+    except IndexError:
+        i_ville += 1
+        return
+
+
 def ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche):
         """
             A FAIRE PLUS TARD (coordonnées GPS)
@@ -253,12 +328,8 @@ def ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche):
         on pop les pas défa
         """
 
-
-
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        print("date and time =", dt_string)
-
+        print("\tDébut d'écriture du GeoJSON...")
+        debut = datetime.now()
 
 
         with open(CHEMIN_ABSOLU + 'location_ville.geojson', 'w') as my_geojson:
@@ -273,97 +344,18 @@ def ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche):
             i_ville = 1
 
             for dep in dict_ville_insee_dep_plus_touche.items():
-                try :
-                    nomville = dep[0]
-                    codeinsee = int(dep[1]) # important
-
-                    url_json_dep = f"https://geo.api.gouv.fr/communes?code={codeinsee}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
-                    json_commune = json.loads(requests.get(url_json_dep).text)
-                    # position = json_commune["features"][0]["geometry"]["coordinates"][0]
-                    
-                    # longitude = position[0] # important
-                    # latitude = position[1] # important
-                    type_ville      = json_commune["features"][0]["type"]
-                    properties_ville= json_commune["features"][0]["properties"]
-                    geometry_ville  = json_commune["features"][0]["geometry"]["coordinates"][0]
-                    
-                    
-                    # "type": "Feature",
-                    my_geojson.write('\t\t{\n')
-                    my_geojson.write('\t\t\t"type" : "Feature",\n')
-
-                    #"properties": {
-                    my_geojson.write('\t\t\t"properties" : {\n')
-                    my_geojson.write('\t\t\t\t"nom": "' + json_commune["features"][0]["properties"]["nom"] + '",\n')
-                    my_geojson.write('\t\t\t\t"code": "' + json_commune["features"][0]["properties"]["code"] + '",\n')
-                    my_geojson.write('\t\t\t\t"codesPostaux": "' + json_commune["features"][0]["properties"]["codesPostaux"][0] + '",\n')
-                    my_geojson.write('\t\t\t\t"codeDepartement": "' + json_commune["features"][0]["properties"]["codeDepartement"] + '",\n')
-                    my_geojson.write('\t\t\t\t"codeRegion": "' + json_commune["features"][0]["properties"]["codeRegion"] + '",\n')
-                    my_geojson.write('\t\t\t\t"population": "' + str(json_commune["features"][0]["properties"]["population"]) + '"\n')
-                    my_geojson.write('\t\t\t},\n')
-
-                    #"geometry"
-                    my_geojson.write('\t\t\t"geometry": {\n')
-                    my_geojson.write('\t\t\t\t"type": "' + json_commune["features"][0]["geometry"]["type"] + '",\n')
-                    my_geojson.write('\t\t\t\t"coordinates":\n')
-                    my_geojson.write('\t\t\t\t[\n')
-                    my_geojson.write('\t\t\t\t\t[\n')
-
-
-                    taille = len(geometry_ville)
-                    i = 1
-                    for localisation in geometry_ville:
-                        my_geojson.write('\t\t\t\t\t\t[\n')
-
-                        my_geojson.write('\t\t\t\t\t\t\t' + str(localisation[0]) + ',\n')
-                        my_geojson.write('\t\t\t\t\t\t\t' + str(localisation[1]) + '\n')
-                        
-                        if i != taille :
-                            my_geojson.write('\t\t\t\t\t\t],\n')
-                        else :
-                            my_geojson.write('\t\t\t\t\t\t]\n')
-
-                        i += 1
-
-
-
-                    my_geojson.write('\t\t\t\t\t]\n')
-                    my_geojson.write('\t\t\t\t]\n')
-                    my_geojson.write('\t\t\t}\n')
-
-                    if i_ville != nb_ville :
-                        my_geojson.write('\t\t},\n')
-                    else:
-                        my_geojson.write('\t\t}\n')
-                        break
-
-                    i_ville += 1
-
-                    # for pv in properties_ville.items():
-                    #     breakpoint()
-                    #     my_geojson.write(pv)
-                    # for gv in geometry_ville.items():
-                    #     my_geojson.write(gv)
-                    # break
-                    # breakpoint()
-                    
-
-                except IndexError:
-                    i_ville += 1
-                    continue
-
+                write_geojson(my_geojson, dep, nb_ville, i_ville)
 
 
             my_geojson.write('\t]\n')
             my_geojson.write('}')
 
 
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        print("date and time =", dt_string)
+        fin = datetime.now()
+        total = fin - debut
+        total_seconds = total.total_seconds()
+        print(f"\tTerminé.\n\tDurée de traitement : {total_seconds} secondes.\n")
 
-        
-        print("Ecriture terminée")
         return dict_ville_position
 
 def recup_dep_le_plus_touche(pourcent_defavorise):
@@ -415,7 +407,8 @@ def main():
 
     dep_plus_touche = recup_dep_le_plus_touche(pourcent_defavorise)
     dict_ville_insee_dep_plus_touche = recup_insee_dep_touche(dict_ville_insee, dep_plus_touche)
-    ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche)
+    #ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche)
+    print("Remettre la fonction")
 
 # end main
 
