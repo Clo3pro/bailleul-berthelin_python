@@ -8,7 +8,7 @@ Janvier 2022
     - **git clone https://github.com/Clo3pro/bailleul-berthelin_python.git**
 - Ouvrir une Invite de Commandes
 - Entrer :
-    - **cd {*CheminVersLeDossierCloné*}\bailleul-berthelin_python\**
+    - **cd {*CheminVersLeDossierCloné*}\**
     - **python main.py** (prend environ 45 sec à générer le GeoJSON)
     - **python app.py**
     
