@@ -10,10 +10,6 @@ from datetime import datetime
 
 LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
 
-# CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
-
-# CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
-CHEMIN_ABSOLU = "./"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
@@ -53,6 +49,7 @@ def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
     return dep_dict
 
 
+
 def create_dict_annees(json_brut, nb_villes):
     """
     {ville1 : année, ville2 : année ...}
@@ -80,16 +77,13 @@ def create_dict_annees(json_brut, nb_villes):
                             annees_dict[nom_ville] = (json_brut['records'][ville_index]['fields']['date_de_decision_france_1']).split('-')[0]
                         continue
                     except KeyError:
+                        # Pas de date équivaut à une commune non défavorisée
                         continue
-    #pas besoin d'ajouter dans le dict, pas de date <==> pas de défa, du coup?
-    # except KeyError: # suite
-    # if(nom_ville not in annees_dict.keys()):
-    # annees_dict[nom_ville] = 'NaN'
-    # continue
     return annees_dict
 
 
-def annees_entreefunction(dep_dict, nb_villes, dict_annees):
+
+def annees_entreefunction(dep_dict, dict_annees):
     dict_des_entrees_dans_defa = dict()
     for nomville in dict_annees.keys():
         for dep in dep_dict.keys():
@@ -98,11 +92,6 @@ def annees_entreefunction(dep_dict, nb_villes, dict_annees):
                 continue
     return dict_des_entrees_dans_defa
 
-
-
-    # for dep in dep_dict.keys():
-    #     for index_ville in range(len(dep_dict[dep])):
-    #        ville = dep_dict[dep][index_ville]
 
 
 def nb_villes_par_annees(dict_annees):
@@ -147,16 +136,16 @@ def nb_villes_par_annees(dict_annees):
     return nb_ville_par_annee
 
 
+
 def create_csv_annees(annees_entree_dict):
-    with open(CHEMIN_ABSOLU + 'annees_test.csv', 'w', newline='') as csv_file:
+    with open('./nombre_ville_ajoutees_par_periode.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(
             ['Periode entree', 'Nombre de villes ajoutees cette periode']
         )
         for k, v in annees_entree_dict.items():
-            #breakpoint()
             writer.writerow([k, v])
-    # print(f'Ecriture termin\u00e9e')
+
 
 
 def pourcent_ville_defavorisee_par_dep(dep_dict):
@@ -169,14 +158,15 @@ def pourcent_ville_defavorisee_par_dep(dep_dict):
     return pourcent_dict
 
 
+
 def create_csv_file(pourcent_defavorise):
-    with open(CHEMIN_ABSOLU + 'pourcent_defavorise.csv', 'w', newline='') as csv_file:
+    with open('./pourcent_defavorise.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(
             ['Departement', 'Pourcentage communes defavorisees', 'Nombre total communes', 'Nombre communes defavorisees'])
         for k, v in pourcent_defavorise.items():
             writer.writerow([k, v, nbCparD[k], int(nbCparD[k]*pourcent_defavorise[k]/100)])
-    # print(f'Ecriture terminée')
+
 
 
 def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
@@ -190,7 +180,7 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
         '50-75': 0,
         '75-100': 0
     }
-    with open(CHEMIN_ABSOLU + 'pourcent_defavorise.csv', newline='') as csv_file:
+    with open('./pourcent_defavorise.csv', newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
             dep = row['Departement']
@@ -210,7 +200,8 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
     return myRangeDict
 
 
-def recup_insee_via_ville(departement_dictM, DATA_UTILE, NB_VILLES):
+
+def recup_insee_via_ville( DATA_UTILE, NB_VILLES):
     dict_ville_insee = dict()
     for i in range(NB_VILLES):
         codecommune = DATA_UTILE[i]["fields"]["code_commune"]
@@ -219,21 +210,15 @@ def recup_insee_via_ville(departement_dictM, DATA_UTILE, NB_VILLES):
     return dict_ville_insee
 
 
+
 def write_geojson(my_geojson, dep, nb_ville, i_ville):
     try :
-        nomville = dep[0]
         codeinsee = int(dep[1]) # important
 
         url_json_dep = f"https://geo.api.gouv.fr/communes?code={codeinsee}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
         json_commune = json.loads(requests.get(url_json_dep).text)
-        # position = json_commune["features"][0]["geometry"]["coordinates"][0]
         
-        # longitude = position[0] # important
-        # latitude = position[1] # important
-        type_ville      = json_commune["features"][0]["type"]
-        properties_ville= json_commune["features"][0]["properties"]
         geometry_ville  = json_commune["features"][0]["geometry"]["coordinates"][0]
-        
         
         # "type": "Feature",
         my_geojson.write('\t\t{\n')
@@ -285,14 +270,6 @@ def write_geojson(my_geojson, dep, nb_ville, i_ville):
             return
 
         i_ville += 1
-
-        # for pv in properties_ville.items():
-        #     breakpoint()
-        #     my_geojson.write(pv)
-        # for gv in geometry_ville.items():
-        #     my_geojson.write(gv)
-        # break
-        # breakpoint()
         
 
     except IndexError:
@@ -300,38 +277,15 @@ def write_geojson(my_geojson, dep, nb_ville, i_ville):
         return
 
 
+
 def ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche):
-        """
-            A FAIRE PLUS TARD (coordonnées GPS)
-            # Récupérer les données géographiques des communes via code insee
-            for codeinsee in communes_dict.items():
-                print(codeinsee[0])
-                # url_json_dep = "https://geo.api.gouv.fr/communes?code={codeinsee[0]}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
-                # url_json_dep_truc = json.loads(requests.get(url_json_dep).text)
-        """
-        #   ECRIRE FONCTION ICI
-
         dict_ville_position = dict()
-        """
-        'Montévrain': {
-            'code_insee': '77307',
-            'longitude': 'yyyyyyyyyyy',
-            'latitude': 'xxxxxxxxxx',
-        },
-        """
-
-        """
-        appel api de TOUTES les villes du département,
-        avec nom et codeinsee des défa
-        compare codes insee
-        on pop les pas défa
-        """
 
         print("\tDébut d'écriture du GeoJSON...")
         debut = datetime.now()
 
 
-        with open(CHEMIN_ABSOLU + 'location_ville.geojson', 'w') as my_geojson:
+        with open('./location_ville.geojson', 'w') as my_geojson:
             my_geojson.write('{\n')
             my_geojson.write('\t"type": "FeatureCollection",\n')
             my_geojson.write('\t"features":\n')
@@ -357,6 +311,8 @@ def ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche):
 
         return dict_ville_position
 
+
+
 def recup_dep_le_plus_touche(pourcent_defavorise):
     max = 0
     dep_max = ''
@@ -365,6 +321,7 @@ def recup_dep_le_plus_touche(pourcent_defavorise):
             max = dep[1]
             dep_max = dep[0]
     return dep_max
+
 
 
 def recup_insee_dep_touche(dict_ville_insee, dep_plus_touche):
@@ -378,6 +335,7 @@ def recup_insee_dep_touche(dict_ville_insee, dep_plus_touche):
     return dict_ville_insee_plus_touche
 
 
+
 def main():
     json_brut = json.loads(requests.get(LIEN).text)
 
@@ -385,12 +343,11 @@ def main():
     NB_VILLES = json_brut["nhits"]
     DATA_UTILE = json_brut["records"]
 
-    departement_dictM = remplir_dict_avec_villes(
-        departement_dict, DATA_UTILE, NB_VILLES)
+    departement_dictM = remplir_dict_avec_villes(departement_dict, DATA_UTILE, NB_VILLES)
     
 
     dict_annees = create_dict_annees(json_brut, NB_VILLES)
-    annees_entree_dict = annees_entreefunction(departement_dictM, NB_VILLES, dict_annees)
+    annees_entreefunction(departement_dictM, dict_annees)
 
 
     pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
@@ -402,17 +359,12 @@ def main():
 
 
 
-    dict_ville_insee = recup_insee_via_ville(departement_dictM, DATA_UTILE, NB_VILLES)
+    dict_ville_insee = recup_insee_via_ville(DATA_UTILE, NB_VILLES)
 
     dep_plus_touche = recup_dep_le_plus_touche(pourcent_defavorise)
     dict_ville_insee_dep_plus_touche = recup_insee_dep_touche(dict_ville_insee, dep_plus_touche)
-    #ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche)
-    print("Remettre la fonction")
-
-# end main
+    ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche)
 
 
-# Run
 if __name__ == "__main__":
     main()
-# end
