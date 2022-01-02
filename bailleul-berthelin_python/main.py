@@ -13,7 +13,7 @@ LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-de
 # CHEMIN_ABSOLU = "/Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/pourcent_defavorise.csv"
 
 # CHEMIN_ABSOLU = "C:/Users/valen/OneDrive/Bureau/E3/Python/bailleul-berthelin_python/bailleul-berthelin_python/"
-CHEMIN_ABSOLU = "./bailleul-berthelin_python"
+CHEMIN_ABSOLU = "./"
 
 
 def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
@@ -206,8 +206,7 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
                 myRangeDict['50-75'] += 1
             elif 75 < val <= 100:
                 myRangeDict['75-100'] += 1
-            else:
-                print(f"dep:{dep} ; val:{val}")
+            
     return myRangeDict
 
 

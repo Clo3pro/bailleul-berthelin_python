@@ -65,15 +65,19 @@ pourcentage_list.pop(0)
 dep_list.pop(0)
 nb_total_ville.pop(0)
 nb_communes_defa.pop(0)
-map2Data = pd.read_csv("./pourcent_defavorise.csv")
-
+map2Data = pd.read_csv(CHEMIN_ABSOLU+ "pourcent_defavorise.csv")
+####################################################################
+## Création du dictionnaire de données pour l'affichage du tableau##
+####################################################################
 data = {depTitle: dep_list, pourcenTitle: pourcentage_list, nbtotalTitle: nb_total_ville, nbcommTitle: nb_communes_defa}
 #df = pd.DataFrame(data=data)
-tableDf = pd.DataFrame(data=data)
+tableDf = pd.read_csv("pourcent_defavorise.csv")
 vtest = dictRangePourcent()
 depContours = "departements.geojson"
+####################################################################
+#######################Création des cartes #########################
+####################################################################
 
-###### Création Cartes ########
 defaData = "location_ville.geojson"
 map = folium.Map(location=[45.156891, 0.730795],zoom_start="9")
 folium.GeoJson(defaData, name="Communes défavorisées du département le plus touché").add_to(map)
@@ -97,8 +101,11 @@ g =folium.Choropleth(
 folium.LayerControl().add_to(map2)
 
 map2.save('carto2.html')
-#### Création Tableau ####
-def generate_table(dataframe, max_rows=50):
+####################################################################
+############# Création du tableau et affichage en web ##############
+####################################################################
+
+"""def generate_table(dataframe, max_rows=50):
     return html.Table([
         html.Thead(
             html.Tr([html.Th(col) for col in dataframe.columns])
@@ -110,20 +117,33 @@ def generate_table(dataframe, max_rows=50):
         ]
     )
     ], className="table tableColor",style={"overflowY": 'auto'}
-	)
-""" def generate_table(dataframe, max_rows=100):
-    breakpoint()
-    return dash_table.DataTable(columns=[[{'id': c, 'name': c} for c in dataframe.columns]],
-        data= dataframe
+	)"""
+def generate_table(dataframe, max_rows=100):
+    
+    return dash_table.DataTable(columns=[{'id': c, 'name': c} for c in dataframe.columns],
+        data= dataframe.to_dict('records')
         ,
+		style_cell={'textAlign': 'center',
+		'border': '1px solid grey' },
+		style_header={
+        'backgroundColor': 'rgb(30, 30, 30)',
+        'color': '#7FDBFF',
+		'font-size':'18px'
+        },
+        style_data={
+        'backgroundColor': '#666666',
+        'color': '#7FDBFF'
+        },
         style_table={
             'height': 500,
             'overflowY': 'scroll',
-            'width': 800
-        }) """
+            'width': 'auto'
+        }) 
 
 
-
+####################################################################
+####### Formattage des données et création de l'histogramme ########
+####################################################################
 df = pd.DataFrame({
     "Pourcentage de communes défavorisées": ['0', '0-25', '25-50', '50-75', '75-100'],
     # "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
@@ -137,7 +157,9 @@ fig.update_layout(
     paper_bgcolor=colors['background'],
     font_color=colors['text']
 )
-
+####################################################################
+###################### Affichage du Dashboard ######################
+####################################################################
 app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'100% !important'}, className=" m-0 px-3",children=[
     html.H1(
         children='Tableau de bord',
@@ -156,8 +178,8 @@ app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'1
         id='example-graph-2',
         figure=fig
     ),
-	html.Div(id="buttonContainer", className="row px-3 text-center flex-sm-row py-3", children=[
-    dbc.Button("Tableau pourcentage communes défas par dép",outline=True, color="info",id='btn-pullUp',class_name=' col-3 me-3', n_clicks=0),
+	html.Div(id="buttonContainer", className="row px-3 text-center space-around flex-sm-row py-3", children=[
+    dbc.Button("Tableau pourcentage communes défas par dép",outline=True, color="info",id='btn-pullUp',class_name=' col-3  me-3', n_clicks=0),
 	dbc.Button("Carte département le plus touché",outline=True,color="info", id='btn-pullUpMap',class_name='col-3 me-3', n_clicks=0),
 	dbc.Button("Carte pourcentage par département",outline=True,color="info", id='btn-pullUpMap2',class_name='col-3 me-3', n_clicks=0)
 	]),
@@ -176,6 +198,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'1
 	
 ])
 
+
+####################################################################
+######## Fonctions pour afficher les différents composants #########
+####################################################################
 @app.callback(
     
 	Output("DaContainer", "is_open"),
