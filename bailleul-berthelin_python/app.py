@@ -79,21 +79,23 @@ depContours = "departements.geojson"
 ####################################################################
 
 defaData = "location_ville.geojson"
-map = folium.Map(location=[45.156891, 0.730795],zoom_start="9")
+map = folium.Map(location=[45.156891, 0.730795],zoom_start="8")
 folium.GeoJson(defaData, name="Communes défavorisées du département le plus touché").add_to(map)
 folium.LayerControl().add_to(map)
 map.save('cartographie.html')
 
 ##bins = data["Pourcentage communes defavorisees"].quantile([0, 0.25, 0.5, 0.75, 1])
 
-map2 = folium.Map(location=[47.998, 1.747],zoom_start="6",scrollWheelZoom=True)
+
+
+map2 = folium.Map(location=[45.7797, 2.58694],zoom_start="5",scrollWheelZoom=True)
 g =folium.Choropleth(
 	geo_data=depContours,
     name="Pourcentage de communes défavorisées par département",
     data=map2Data,
     columns=["Departement","Pourcentage communes defavorisees"],
     fill_color="YlOrRd",
-	key_on='properties.code',
+	key_on='feature.properties.code',
     fill_opacity=0.7,
     line_opacity=0.2,
 	highlight=True,
@@ -121,8 +123,8 @@ map2.save('carto2.html')
 def generate_table(dataframe, max_rows=100):
     
     return dash_table.DataTable(columns=[{'id': c, 'name': c} for c in dataframe.columns],
-        data= dataframe.to_dict('records')
-        ,
+        data= dataframe.to_dict('records'),
+		sort_action='native',
 		style_cell={'textAlign': 'center',
 		'border': '1px solid grey' },
 		style_header={
@@ -160,7 +162,7 @@ fig.update_layout(
 ####################################################################
 ###################### Affichage du Dashboard ######################
 ####################################################################
-app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'100% !important'}, className=" m-0 px-3",children=[
+app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'auto'}, className=" m-0 px-3",children=[
     html.H1(
         children='Tableau de bord',
         style={
@@ -176,9 +178,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'1
 
     dcc.Graph(
         id='example-graph-2',
+		className="mb-5",
         figure=fig
     ),
-	html.Div(id="buttonContainer", className="row px-3 text-center space-around flex-sm-row py-3", children=[
+	html.Div(id="buttonContainer", className="row px-3 text-center space-around flex-sm-row py-3 my-4", children=[
     dbc.Button("Tableau pourcentage communes défas par dép",outline=True, color="info",id='btn-pullUp',class_name=' col-3  me-3', n_clicks=0),
 	dbc.Button("Carte département le plus touché",outline=True,color="info", id='btn-pullUpMap',class_name='col-3 me-3', n_clicks=0),
 	dbc.Button("Carte pourcentage par département",outline=True,color="info", id='btn-pullUpMap2',class_name='col-3 me-3', n_clicks=0)
@@ -188,7 +191,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background'],'height':'1
         html.Div(id='DaTable',className=' col-10 offset-1 px-3',children=[ generate_table(tableDf)])
 	]),
 	dbc.Collapse(id="mapContainer",is_open=False,className="mx-2 my-2",children=[
-		html.H3(children="CARTOGRAPHIE DU DÉPARTEMENT LE PLUS TOUCHÉ",className='titleclass col-12'),
+		html.H3(children="CARTOGRAPHIE DU DÉPARTEMENT LE PLUS TOUCHÉ: LA DORDOGNE",className='titleclass col-12'),
 		html.Iframe(id='map',srcDoc=open("cartographie.html",'r').read(),className="px-1",width='100%',height='500')
 	]),
 	dbc.Collapse(id="map2Container",is_open=False,className="mx-2 my-2",children=[
