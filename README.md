@@ -1,20 +1,25 @@
 # Rapport de projet - Python
+
 ## Projet portant sur les communes défavorisées en France
+
 Cloé BERTHELIN et Valentin BAILLEUL  
 ESIEE PARIS - E3FI 1I  
 Janvier 2022  
-## Installation
-- Cloner le dépôt :
-    - git clone *https://github.com/Clo3pro/bailleul-berthelin_python.git*
-- Ouvrir une Invite de commandes
-- Pour installer les libraires, entrer :
-    - **python -m pip install Dash Pandas Folium plotly.express branca dash_bootstrap_components requests**
-- Entrer :
-    - **cd {*CheminVersLeDossierCloné*}**
-    - **python main.py**
 
-Pour relancer les calculs, entrer *python functions.py*
-    
+## Installation
+
+- Créer un nouveau dossier, dans lequel sera cloné le repository
+- Ouvrir Invite de Commandes
+- Placer le Current Directory dans le dossier crée ci-dessus
+- Pour cloner le dépôt, entrer dans la console :
+    - **git clone *https://github.com/Clo3pro/bailleul-berthelin_python.git***
+- Ensuite, entrer :
+    - **python -m pip install Dash Pandas Folium plotly.express branca dash_bootstrap_components requests**
+    - **cd bailleul-berthelin_python**
+    - **python main.py**
+- Ouvrir un navigateur web :
+- Entrer ***http://127.0.0.1:8050/*** dans la barre d'url
+
 ## Developer Guide
 
 La structure de l’application Dashboard est principalement organisée dans 2 fichiers:
@@ -45,7 +50,7 @@ Dans le fichier functions, nous avons créé des fichiers csv et geojson permett
 - Création CSV reliant Département / Pourcentage communes défavorisées dans le département / Nombre total de communes dans le département / Nombre de communes défavorisées dans le département
 - Création d’un gros document GeoJSON comportant toutes les datas de chacune des villes défavorisées qui sont dans le département le plus défavorisé
 
-## main
+## Main
 
 Ce fichier contient tout le code dit “front-end” de l’application dashboard.  
 On y retrouve les divers dictionnaires de données traités au préalable dans functions.  
@@ -76,6 +81,8 @@ Sous cet histogramme, vous verrez trois boutons :
 - Enfin, le troisième bouton permet d’afficher une seconde carte. Vous trouverez sur celle-ci les départements français colorés du jaune au rouge selon le pourcentage de communes défavorisées: jaune, le nombre le plus faible. Rouge, le nombre le plus élevé.
 
 Vous pouvez afficher, ou bien cacher ces cartes et le tableau en cliquant à nouveau sur les boutons.
+
+Si vous voulez relancer les calculs au travers de l'API, entrer *python functions.py* dans l'invite de commandes, puis *python main.py* pour relancer la visualisation
 
 ## Les limitations du projet
 

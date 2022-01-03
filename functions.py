@@ -138,7 +138,7 @@ def nb_villes_par_annees(dict_annees):
 
 
 def create_csv_annees(annees_entree_dict):
-    with open('./nombre_ville_ajoutees_par_periode.csv', 'w', newline='') as csv_file:
+    with open('nombre_ville_ajoutees_par_periode.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(
             ['Periode entree', 'Nombre de villes ajoutees cette periode']
@@ -160,7 +160,7 @@ def pourcent_ville_defavorisee_par_dep(dep_dict):
 
 
 def create_csv_file(pourcent_defavorise):
-    with open('./pourcent_defavorise.csv', 'w', newline='') as csv_file:
+    with open('pourcent_defavorise.csv', 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(
             ['Departement', 'Pourcentage communes defavorisees', 'Nombre total communes', 'Nombre communes defavorisees'])
@@ -180,7 +180,7 @@ def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
         '50-75': 0,
         '75-100': 0
     }
-    with open('./pourcent_defavorise.csv', newline='') as csv_file:
+    with open('pourcent_defavorise.csv', newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
             dep = row['Departement']
@@ -363,7 +363,7 @@ def main():
 
     dep_plus_touche = recup_dep_le_plus_touche(pourcent_defavorise)
     dict_ville_insee_dep_plus_touche = recup_insee_dep_touche(dict_ville_insee, dep_plus_touche)
-    ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche)
+    # ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche)
 
 
 
