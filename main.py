@@ -1,371 +1,239 @@
-import csv
-import requests
-import json
-from requests.models import RequestEncodingMixin
-
-from DICT_DEP import departement_dict
-from NB_COMMUNES_PAR_DEPARTEMENT import nb_communes_par_dep as nbCparD
-
-from datetime import datetime
-
-LIEN = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017&q=&rows=9336&refine.zone_defavorisee_simple_fr=ZDS"
-
-
-
-def remplir_dict_avec_villes(dep_dict, data_utile, nb_villes):
-    """
-    Exemple :
-    dd == {'1' : ['ville1', 'ville2']}
-    dd['1']
-    Renvoie ['ville1', 'ville2']
-
-    dd['1'].append("ville3")
-    dd['1']
-    Renvoie ['ville1', 'ville2', 'ville3']
-    """
-
-    # de 0 à n-1  # Remplacer par nb_villes si différent de nb_villes
-    for i in range(nb_villes):
-        codecommune = data_utile[i]["fields"]["code_commune"]
-        nomcommune = data_utile[i]["fields"]["nom_commune"]
-        codedepartement = codecommune[0:2]
-
-        # Ajoute la ville dans la liste associée au département
-        try:
-            # Métropole
-            if codedepartement != '97':
-                dep_dict[codedepartement].append(nomcommune)
-                continue
-
-            # Outre-Mer
-            codeoutremer = codecommune[0:3]
-            dep_dict[codeoutremer].append(nomcommune)
-
-        # Si le code département n'a pas de sens
-        except KeyError:
-            print("\n\n\nBug ici\n\n\n")
-            breakpoint()
-
-    return dep_dict
-
-
-
-def create_dict_annees(json_brut, nb_villes):
-    """
-    {ville1 : année, ville2 : année ...}
-    """
-    annees_dict = dict()
-    for ville_index in range(nb_villes):
-        nom_ville = json_brut['records'][ville_index]['fields']['nom_commune']
-        try:
-            if(nom_ville not in annees_dict.keys()):
-                annees_dict[nom_ville] = (json_brut['records'][ville_index]['fields']['date_de_decision_france_4']).split('-')[0]
-            continue
-        except KeyError: # suite
-            try:
-                if(nom_ville not in annees_dict.keys()):
-                    annees_dict[nom_ville] = (json_brut['records'][ville_index]['fields']['date_de_decision_france_3']).split('-')[0]
-                continue
-            except KeyError: # suite
-                try:
-                    if(nom_ville not in annees_dict.keys()):
-                        annees_dict[nom_ville] = (json_brut['records'][ville_index]['fields']['date_de_decision_france_2']).split('-')[0]
-                    continue
-                except KeyError: # suite
-                    try:
-                        if(nom_ville not in annees_dict.keys()):
-                            annees_dict[nom_ville] = (json_brut['records'][ville_index]['fields']['date_de_decision_france_1']).split('-')[0]
-                        continue
-                    except KeyError:
-                        # Pas de date équivaut à une commune non défavorisée
-                        continue
-    return annees_dict
-
-
-
-def annees_entreefunction(dep_dict, dict_annees):
-    dict_des_entrees_dans_defa = dict()
-    for nomville in dict_annees.keys():
-        for dep in dep_dict.keys():
-            if(nomville in dep_dict[dep]):
-                dict_des_entrees_dans_defa[nomville] = dict_annees[nomville]
-                continue
-    return dict_des_entrees_dans_defa
-
-
-
-def nb_villes_par_annees(dict_annees):
-    nb_ville_par_annee = {
-        '1970-1975': 0,
-        '1975-1980': 0,
-        '1980-1985': 0,
-        '1985-1990': 0,
-        '1990-1995': 0,
-        '1995-2000': 0,
-        '2000-2005': 0,
-        '2005-2010': 0,
-        '2010-2015': 0,
-        '2015-2020': 0,
-    }
-
-    for nomville in dict_annees.keys():
-        annee = int(dict_annees[nomville])
-        if 1970 < annee <= 1975:
-            nb_ville_par_annee['1970-1975'] += 1
-        elif 1975 < annee <= 1980:
-            nb_ville_par_annee['1975-1980'] += 1
-        elif 1980 < annee <= 1985:
-            nb_ville_par_annee['1980-1985'] += 1
-        elif 1985 < annee <= 1990:
-            nb_ville_par_annee['1985-1990'] += 1
-        elif 1990 < annee <= 1995:
-            nb_ville_par_annee['1990-1995'] += 1
-        elif 1995 < annee <= 2000:
-            nb_ville_par_annee['1995-2000'] += 1
-        elif 2000 < annee <= 2005:
-            nb_ville_par_annee['2000-2005'] += 1
-        elif 2005 < annee <= 2010:
-            nb_ville_par_annee['2005-2010'] += 1
-        elif 2010 < annee <= 2015:
-            nb_ville_par_annee['2010-2015'] += 1
-        elif 2015 < annee <= 2020:
-            nb_ville_par_annee['2015-2020'] += 1
-        else:
-            breakpoint()
-
-    return nb_ville_par_annee
-
-
-
-def create_csv_annees(annees_entree_dict):
-    with open('./nombre_ville_ajoutees_par_periode.csv', 'w', newline='') as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(
-            ['Periode entree', 'Nombre de villes ajoutees cette periode']
-        )
-        for k, v in annees_entree_dict.items():
-            writer.writerow([k, v])
-
-
-
-def pourcent_ville_defavorisee_par_dep(dep_dict):
-    pourcent_dict = dict()
-    for numero_dep in dep_dict.keys():
-        nb_defa = len(dep_dict[numero_dep])
-        nb_comm = nbCparD[numero_dep]
-        pourcent_dict[numero_dep] = round(
-            float(nb_defa) * 100 / float(nb_comm), 2)
-    return pourcent_dict
-
-
-
-def create_csv_file(pourcent_defavorise):
-    with open('./pourcent_defavorise.csv', 'w', newline='') as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(
-            ['Departement', 'Pourcentage communes defavorisees', 'Nombre total communes', 'Nombre communes defavorisees'])
-        for k, v in pourcent_defavorise.items():
-            writer.writerow([k, v, nbCparD[k], int(nbCparD[k]*pourcent_defavorise[k]/100)])
-
-
-
-def pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100():
-    """
-    y= pourcentage de communes défa par dép en fct de x= range 0/25/50/75/100
-    """
-    myRangeDict = {
-        '0': 0,
-        '0-25': 0,
-        '25-50': 0,
-        '50-75': 0,
-        '75-100': 0
-    }
-    with open('./pourcent_defavorise.csv', newline='') as csv_file:
-        reader = csv.DictReader(csv_file)
-        for row in reader:
-            dep = row['Departement']
-            val = float(row['Pourcentage communes defavorisees'])
-
-            if val == 0:
-                myRangeDict['0'] += 1
-            elif 0 < val <= 25:
-                myRangeDict['0-25'] += 1
-            elif 25 < val <= 50:
-                myRangeDict['25-50'] += 1
-            elif 50 < val <= 75:
-                myRangeDict['50-75'] += 1
-            elif 75 < val <= 100:
-                myRangeDict['75-100'] += 1
-            
-    return myRangeDict
-
-
-
-def recup_insee_via_ville( DATA_UTILE, NB_VILLES):
-    dict_ville_insee = dict()
-    for i in range(NB_VILLES):
-        codecommune = DATA_UTILE[i]["fields"]["code_commune"]
-        nomcommune = DATA_UTILE[i]["fields"]["nom_commune"]
-        dict_ville_insee[nomcommune] = codecommune
-    return dict_ville_insee
-
-
-
-def write_geojson(my_geojson, dep, nb_ville, i_ville):
-    try :
-        codeinsee = int(dep[1]) # important
-
-        url_json_dep = f"https://geo.api.gouv.fr/communes?code={codeinsee}&fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=contour"
-        json_commune = json.loads(requests.get(url_json_dep).text)
-        
-        geometry_ville  = json_commune["features"][0]["geometry"]["coordinates"][0]
-        
-        # "type": "Feature",
-        my_geojson.write('\t\t{\n')
-        my_geojson.write('\t\t\t"type" : "Feature",\n')
-
-        #"properties": {
-        my_geojson.write('\t\t\t"properties" : {\n')
-        my_geojson.write('\t\t\t\t"nom": "' + json_commune["features"][0]["properties"]["nom"] + '",\n')
-        my_geojson.write('\t\t\t\t"code": "' + json_commune["features"][0]["properties"]["code"] + '",\n')
-        my_geojson.write('\t\t\t\t"codesPostaux": "' + json_commune["features"][0]["properties"]["codesPostaux"][0] + '",\n')
-        my_geojson.write('\t\t\t\t"codeDepartement": "' + json_commune["features"][0]["properties"]["codeDepartement"] + '",\n')
-        my_geojson.write('\t\t\t\t"codeRegion": "' + json_commune["features"][0]["properties"]["codeRegion"] + '",\n')
-        my_geojson.write('\t\t\t\t"population": "' + str(json_commune["features"][0]["properties"]["population"]) + '"\n')
-        my_geojson.write('\t\t\t},\n')
-
-        #"geometry"
-        my_geojson.write('\t\t\t"geometry": {\n')
-        my_geojson.write('\t\t\t\t"type": "' + json_commune["features"][0]["geometry"]["type"] + '",\n')
-        my_geojson.write('\t\t\t\t"coordinates":\n')
-        my_geojson.write('\t\t\t\t[\n')
-        my_geojson.write('\t\t\t\t\t[\n')
-
-
-        taille = len(geometry_ville)
-        i = 1
-        for localisation in geometry_ville:
-            my_geojson.write('\t\t\t\t\t\t[\n')
-
-            my_geojson.write('\t\t\t\t\t\t\t' + str(localisation[0]) + ',\n')
-            my_geojson.write('\t\t\t\t\t\t\t' + str(localisation[1]) + '\n')
-            
-            if i != taille :
-                my_geojson.write('\t\t\t\t\t\t],\n')
-            else :
-                my_geojson.write('\t\t\t\t\t\t]\n')
-
-            i += 1
-
-
-
-        my_geojson.write('\t\t\t\t\t]\n')
-        my_geojson.write('\t\t\t\t]\n')
-        my_geojson.write('\t\t\t}\n')
-
-        if i_ville != nb_ville :
-            my_geojson.write('\t\t},\n')
-        else:
-            my_geojson.write('\t\t}\n')
-            return
-
-        i_ville += 1
-        
-
-    except IndexError:
-        i_ville += 1
-        return
-
-
-
-def ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche):
-        dict_ville_position = dict()
-
-        print("\tDébut d'écriture du GeoJSON...")
-        debut = datetime.now()
-
-
-        with open('./location_ville.geojson', 'w') as my_geojson:
-            my_geojson.write('{\n')
-            my_geojson.write('\t"type": "FeatureCollection",\n')
-            my_geojson.write('\t"features":\n')
-            my_geojson.write('\t[\n')
-
-
-
-            nb_ville = len(dict_ville_insee_dep_plus_touche.items())
-            i_ville = 1
-
-            for dep in dict_ville_insee_dep_plus_touche.items():
-                write_geojson(my_geojson, dep, nb_ville, i_ville)
-
-
-            my_geojson.write('\t]\n')
-            my_geojson.write('}')
-
-
-        fin = datetime.now()
-        total = fin - debut
-        total_seconds = total.total_seconds()
-        print(f"\tTerminé.\n\tDurée de traitement : {total_seconds} secondes.\n")
-
-        return dict_ville_position
-
-
-
-def recup_dep_le_plus_touche(pourcent_defavorise):
-    max = 0
-    dep_max = ''
-    for dep in pourcent_defavorise.items():
-        if max < dep[1]:
-            max = dep[1]
-            dep_max = dep[0]
-    return dep_max
-
-
-
-def recup_insee_dep_touche(dict_ville_insee, dep_plus_touche):
-    dict_ville_insee_plus_touche = dict()
-    for ville in dict_ville_insee.items():
-        dep_actuel = (ville[1])[0:2]
-        if dep_actuel == dep_plus_touche:
-            nomville = ville[0]
-            codeinsee = ville[1]
-            dict_ville_insee_plus_touche[nomville] = codeinsee
-    return dict_ville_insee_plus_touche
-
-
-
-def main():
-    json_brut = json.loads(requests.get(LIEN).text)
-
-    # Définition des constantes et déclaration des listes
-    NB_VILLES = json_brut["nhits"]
-    DATA_UTILE = json_brut["records"]
-
-    departement_dictM = remplir_dict_avec_villes(departement_dict, DATA_UTILE, NB_VILLES)
+from importlib import import_module
+
+import dash
+from dash import dcc
+from dash import html,Input, Output, State
+from dash import dash_table
+import plotly.express as px
+import folium
+from folium import GeoJsonTooltip
+import pandas as pd
+import branca
+import dash_bootstrap_components as dbc
+import geopandas as gdp
+
+from functions import  pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100 as dictRangePourcent
+
+app = dash.Dash(__name__)
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+# command to launch: cloeberthelin$ /usr/local/bin/python3 /Users/cloeberthelin/labo_school/bailleul-berthelin_python/bailleul-berthelin_python/app.py
+# assume you have a "long-form" data frame
+# see https://plotly.com/python/px-arguments/ for more options
+
+##########################################
+####### Style principal du Dashboard######
+##########################################
+colors = {
+    'background': '#3D0085',
+    'text': '#7FDBFF'
+}
+
+# assume you have a "long-form" data frame
+# see https://plotly.com/python/px-arguments/ for more options
+
+#####################################################################
+#### Création des listes, dictionnaires et tableaux de données ######
+######### Nécessaires au bon formattage et à l'affichage ############
+#####################################################################
+dep_list = []
+pourcentage_list = []
+nb_total_ville = []
+nb_communes_defa = []
+
+with open("./pourcent_defavorise.csv", mode='r', encoding='utf8') as f:
+    for elem in f:
+        dep_list.append([elem.split(',')[0]])
+        pourcentage_list.append([elem.split(",")[1].split('\n')[0]])
+        nb_total_ville.append([elem.split(",")[2].split('\n')[0]])
+        nb_communes_defa.append([elem.split(",")[3].split('\n')[0]])
+
+depTitle = str(dep_list[0])
+depTitle = depTitle.split("['")[1].split("']")[0]
+
+pourcenTitle = str(pourcentage_list[0])
+pourcenTitle = pourcenTitle.split("['")[1].split("']")[0]
+
+nbtotalTitle = str(nb_total_ville[0])
+nbtotalTitle = nbtotalTitle.split("['")[1].split("']")[0]
+
+nbcommTitle = str(nb_communes_defa[0])
+nbcommTitle = nbcommTitle.split("['")[1].split("']")[0]
+
+
+pourcentage_list.pop(0)
+dep_list.pop(0)
+nb_total_ville.pop(0)
+nb_communes_defa.pop(0)
+map2Data = pd.read_csv("pourcent_defavorise.csv")
+
+####################################################################
+## Création du dictionnaire de données pour l'affichage du tableau##
+####################################################################
+
+data = {depTitle: dep_list, pourcenTitle: pourcentage_list, nbtotalTitle: nb_total_ville, nbcommTitle: nb_communes_defa}
+
+tableDf = pd.read_csv("pourcent_defavorise.csv")
+depRange = dictRangePourcent()
+depContours = "departements.geojson"
+
+####################################################################
+#######################Création des cartes #########################
+####################################################################
+
+defaData = "location_ville.geojson"
+map = folium.Map(location=[45.156891, 0.730795],zoom_start="8")
+folium.GeoJson(defaData, name="Communes défavorisées du département le plus touché").add_to(map)
+folium.LayerControl().add_to(map)
+map.save('cartographie.html')
+
+map2 = folium.Map(location=[45.7797, 2.58694],zoom_start="5",scrollWheelZoom=True)
+g =folium.Choropleth(
+	geo_data=depContours,
+    name="Pourcentage de communes défavorisées par département",
+    data=map2Data,
+    columns=["Departement","Pourcentage communes defavorisees"],
+    fill_color="YlOrRd",
+	key_on='feature.properties.code',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+	highlight=True,
+    legend_name="Communes défavorisées par Département (%)").add_to(map2)
+folium.LayerControl().add_to(map2)
+
+map2.save('carto2.html')
+
+####################################################################
+############# Création du tableau et affichage en web ##############
+####################################################################
+
+def generate_table(dataframe, max_rows=100):
+    
+    return dash_table.DataTable(columns=[{'id': c, 'name': c} for c in dataframe.columns],
+        data= dataframe.to_dict('records'),
+		sort_action='native',
+		style_cell={'textAlign': 'center',
+		'border': '1px solid grey' },
+		style_header={
+        'backgroundColor': 'rgb(30, 30, 30)',
+        'color': '#7FDBFF',
+		'font-size':'18px'
+        },
+        style_data={
+        'backgroundColor': '#666666',
+        'color': '#7FDBFF'
+        },
+        style_table={
+            'height': 500,
+            'overflowY': 'scroll',
+            'width': 'auto'
+        }) 
+
+
+####################################################################
+####### Formattage des données et création de l'histogramme ########
+####################################################################
+
+df = pd.DataFrame({
+    "Pourcentage de communes défavorisées": ['0', '0-25', '25-50', '50-75', '75-100'],
+    # "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
+    "Nombre de départements": [depRange['0'], depRange['0-25'], depRange['25-50'], depRange['50-75'], depRange['75-100']]
+})
+fig = px.bar(df, x="Pourcentage de communes défavorisées", y="Nombre de départements", barmode="group")
+
+
+fig.update_layout(
+    plot_bgcolor=colors['background'],
+    paper_bgcolor=colors['background'],
+    font_color=colors['text']
+)
+####################################################################
+###################### Affichage du Dashboard ######################
+####################################################################
+
+app.layout = html.Div( className=" m-0 px-3",children=[
+    html.H1(
+        children='Tableau de bord',
+        style={
+            'textAlign': 'center',
+            'color': colors['text']
+        }
+    ),
+
+    html.Div(children='Villes en zone agricole défavorisées', style={
+        'textAlign': 'center',
+        'color': colors['text']
+    }),
+
+    dcc.Graph(
+        id='example-graph-2',
+		className="mb-5",
+        figure=fig
+    ),
+	html.Div(id="buttonContainer", className="row px-3 text-center space-around flex-sm-row py-3", children=[
+    dbc.Button("Tableau pourcentage communes défas par dép",outline=True, color="info",id='btn-pullUp',class_name=' col-3  me-3', n_clicks=0),
+	dbc.Button("Carte département le plus touché",outline=True,color="info", id='btn-pullUpMap',class_name='col-3 me-3', n_clicks=0),
+	dbc.Button("Carte pourcentage par département",outline=True,color="info", id='btn-pullUpMap2',class_name='col-3 me-3', n_clicks=0)
+	]),
+    dbc.Collapse(id='DaContainer',is_open=False,className='bigBox row px-3 text-center', children=[ 
+        html.H3(id='DaTitle',children='TABLEAU COMMUNES DEFAVORISÉES',className='titleclass col-12'),
+        html.Div(id='DaTable',className=' col-10 offset-1 px-3',children=[ generate_table(tableDf)])
+	]),
+	dbc.Collapse(id="mapContainer",is_open=False,className="mx-2 my-2",children=[
+		html.H3(children="CARTOGRAPHIE DU DÉPARTEMENT LE PLUS TOUCHÉ: LA DORDOGNE",className='titleclass col-12'),
+		html.Iframe(id='map',srcDoc=open("cartographie.html",'r').read(),className="px-1",width='100%',height='500')
+	]),
+	dbc.Collapse(id="map2Container",is_open=False,className="mx-2 mt-2",children=[
+		html.H3(children="CARTOGRAPHIE DU POURCENTAGE DE COMMUNES DÉFAVORISÉES PAR DÉPARTEMENT",className='titleclass col-12'),
+		html.Iframe(id='map2',srcDoc=open("carto2.html",'r').read(),className="px-1",width='100%',height='600')
+	])
+	
+])
+
+
+#############################################################################
+###### Fonctions pour afficher dynamiquement les différents composants ######
+#############################################################################
+@app.callback(
+    
+	Output("DaContainer", "is_open"),
+    [Input("btn-pullUp", "n_clicks")],
+    [State("DaContainer", "is_open")],
+)
+
+
+def displayTable(n, is_open):
+    if n:
+        return not is_open
+    return is_open
     
 
-    dict_annees = create_dict_annees(json_brut, NB_VILLES)
-    annees_entreefunction(departement_dictM, dict_annees)
-
-
-    pourcent_defavorise = pourcent_ville_defavorisee_par_dep(departement_dictM)
-    create_csv_file(pourcent_defavorise)
-
+@app.callback(
     
-    nb_villes_annees = nb_villes_par_annees(dict_annees)
-    create_csv_annees(nb_villes_annees)
+	Output("mapContainer", "is_open"),
+    [Input("btn-pullUpMap", "n_clicks")],
+    [State("mapContainer", "is_open")],
+)
 
 
+def displayMap(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+    
+@app.callback(
+    
+	Output("map2Container", "is_open"),
+    [Input("btn-pullUpMap2", "n_clicks")],
+    [State("map2Container", "is_open")],
+)
 
-    dict_ville_insee = recup_insee_via_ville(DATA_UTILE, NB_VILLES)
 
-    dep_plus_touche = recup_dep_le_plus_touche(pourcent_defavorise)
-    dict_ville_insee_dep_plus_touche = recup_insee_dep_touche(dict_ville_insee, dep_plus_touche)
-    ecrire_geojson_via_code_insee(dict_ville_insee_dep_plus_touche)
+def displayMap(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+   
 
 
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    app.run_server(debug=False)
