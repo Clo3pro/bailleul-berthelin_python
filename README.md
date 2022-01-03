@@ -6,26 +6,26 @@ Janvier 2022
 ## Installation
 - Cloner le dépôt :
     - git clone *https://github.com/Clo3pro/bailleul-berthelin_python.git*
-- /!\ **Ouvrir Powershell Prompt d'Anaconda**
-- Installer les libraires :
-    - **python -m pip install Dash Pandas Folium plotly.express branca dash_bootstrap_components requests geopandas**
+- Ouvrir une Invite de commandes
+- Pour installer les libraires, entrer :
+    - **python -m pip install Dash Pandas Folium plotly.express branca dash_bootstrap_components requests**
 - Entrer :
-    - **cd {*CheminVersLeDossierCloné*}\**
-    - **python main.py** (prend environ 45 sec à générer le GeoJSON)
-    - **python app.py**
+    - **cd {*CheminVersLeDossierCloné*}**
+    - **python main.py**
+
+Pour relancer les calculs, entrer *python functions.py*
     
 ## Developer Guide
 
 La structure de l’application Dashboard est principalement organisée dans 2 fichiers:
+- functions.py
 - main.py
-- app.py
 
-Dans le fichier main se trouvent toutes les fonctions de récupération et de traitement de données.  
-Dans le fichier app se trouvent les fonctions de formatage et d’affichage de ces données en une application web.  
+Dans le fichier functions se trouvent toutes les fonctions de récupération et de traitement de données.  
+Dans le fichier main se trouvent les fonctions de formatage et d’affichage de ces données en une application web.  
 Les librairies sont utilisées:  
 - Dash
 - Panda
-- GeoPandas
 - Folium
 - plotly express
 - branca
@@ -34,9 +34,9 @@ Les librairies sont utilisées:
 - csv
 - Json
 
-## Main
+## functions
 
-Dans le fichier main, nous avons créé des fichiers csv et geojson permettant la récupération de données et leur affichage. Nous avons importé et travaillé sur une API provenant :  
+Dans le fichier functions, nous avons créé des fichiers csv et geojson permettant la récupération de données et leur affichage. Nous avons importé et travaillé sur une API provenant :  
 *https://public.opendatasoft.com/explore/dataset/liste-des-communes-classees-en-zones-defavorisees-au-1er-janvier-2017/table/?flg=fr*  
 
 - D’abord on récupère les villes défavorisées présentes dans l’API
@@ -45,10 +45,10 @@ Dans le fichier main, nous avons créé des fichiers csv et geojson permettant l
 - Création CSV reliant Département / Pourcentage communes défavorisées dans le département / Nombre total de communes dans le département / Nombre de communes défavorisées dans le département
 - Création d’un gros document GeoJSON comportant toutes les datas de chacune des villes défavorisées qui sont dans le département le plus défavorisé
 
-## App
+## main
 
 Ce fichier contient tout le code dit “front-end” de l’application dashboard.  
-On y retrouve les divers dictionnaires de données traités au préalable dans Main.  
+On y retrouve les divers dictionnaires de données traités au préalable dans functions.  
 Des blocs de commentaires sont mis en place au-dessus des différentes fonctions afin d’avoir une meilleure compréhension du code.  
 
 Nous utilisons la librairie Dash combinée avec Bootstrap pour gérer l’affichage global des différents composants.  

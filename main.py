@@ -10,7 +10,7 @@ from folium import GeoJsonTooltip
 import pandas as pd
 import branca
 import dash_bootstrap_components as dbc
-import geopandas as gdp
+
 
 from functions import  pourcentage_de_communes_défa_par_dép_selon_range_0_25_50_75_100 as dictRangePourcent
 
